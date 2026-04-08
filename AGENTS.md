@@ -2,13 +2,6 @@
 
 **[핵심 지침]** 본 문서는 프로젝트에 참여하는 AI 에이전트를 위한 **최상위 프롬프트 하네스(Prompt Harness)**이자 **목차(Map)**입니다. 백과사전처럼 모든 규칙을 외우려 하지 말고, 이 지도를 바탕으로 현재 작업에 필요한 컨텍스트만 동적으로 로드(Read-on-Demand)하십시오.
 
-## **0. ⚙️ [최초 실행 지침] 프로젝트 초기화 (Initialization)**
-
-**[1회성 실행 후 삭제]** 본 문서를 프로젝트에 최초로 투입하여 읽는 에이전트나 개발자는 다음 작업을 즉시 수행하고, 완료 후 **이번 섹션 전체를 파일에서 영구 삭제**하십시오.
-
-- **Action 1:** 아래 1. 프로젝트 기본 컨텍스트의 [프로젝트 이름], [주요 언어 및 버전] 등 빈 공간(Placeholder)을 사용자와 대화형으로 확인하여 현재 실제 프로젝트 환경에 맞게 채워 넣으십시오.
-- **Action2:** 아래 `1.4 핵심 디렉토리 구조` 를 프로젝트의 구성에 맞게 설정하십시오.
-
 ## **1. 🏗️ 프로젝트 기본 컨텍스트 (Project Context)**
 
 에이전트는 아래의 개요, 스택, 명령어, 구조를 기준으로 작업을 수행하며 임의로 환경을 가정하지 않습니다.
@@ -17,55 +10,52 @@
 
 **[도메인 맥락]** 에이전트가 비즈니스 의도를 정확히 파악할 수 있도록 프로젝트의 목적을 명시합니다.
 
-- **프로젝트명**: [프로젝트 이름]
-- **핵심 목표**: [프로젝트가 해결하고자 하는 문제나 제공하는 핵심 가치] (예: 기업용 통합 근태 관리 B2B SaS 플랫폼)
-- **주요 타겟**: [주요 사용자층] (예: 중소기업 인사 담당자 및 일반 임직원)
+- **프로젝트명**: Problem Specification AI System (idea-to-real)
+- **핵심 목표**: 사용자의 간략한 아이디어를 입력받아 5 Whys 및 소크라테스식 질문법을 통해 문제의 근본 원인을 파악하고, 논리적 무결성이 검증된 **'구조화된 문제 기술서(Problem Specification)'**를 생성하는 AI 멀티 에이전트 시스템 구축.
+- **주요 타겟**: 소프트웨어 아키텍트, 제품 관리자(PM), 비즈니스 전략가, 창의적 연구자.
 
 ### **1.2. 기술 스택 (Tech Stack)**
 
 | Category            | Stack                             | Note                                             |
 | :------------------ | :-------------------------------- | :----------------------------------------------- |
-| **Package Manager** | [uv / poetry / pnpm / go mod 등]  | (도구별 권장 워크플로우 및 CLI 명령어 준수)      |
-| **Env/Lock Policy** | [Lock 파일 고정 / 특정 버전 명시] | (예: uv.lock, poetry.lock, 고정 버전(`==`) 사용) |
-| **Type**            | [웹/앱/라이브러리/모노리포 등]    | (예: Turborepo Monorepo, MSA, CI Tool)           |
-| **Language**        | [주요 언어 및 버전]               | (예: TypeScript 5.0, Python 3.11+)               |
-| **Framework**       | [프레임워크 및 버전]              | (예: Next.js (apps/web), NestJS (apps/api))      |
-| **Database**        | [DB 및 ORM]                       | (예: PostgreSQL, Prisma, SQLAlchemy)             |
-| **Infra/CI**        | [인프라 스택]                     | (예: Docker, GitHub Actions, AWS)                |
+| **Package Manager** | uv                                | (Fast Python package installer and resolver)     |
+| **Env/Lock Policy** | uv.lock                           | (Strict version pinning and reproducibility)     |
+| **Type**            | Web Application                   | AI Multi-Agent Backend 중심                      |
+| **Language**        | Python 3.11+                      | Type Hinting 적극 활용                           |
+| **Framework**       | Django                            | Django Templates (Frontend), Django ORM          |
+| **Database**        | PostgreSQL                        | 데이터 무결성 및 복잡한 쿼리 처리                |
+| **Infra/CI**        | Docker (예정)                     | GitHub Actions를 통한 자동화 검증                |
 
 ### **1.3. 주요 명령어 (Commands & Scripts)**
 
-**[피드백 루프]** 에이전트는 코드 작성 및 수정 후, 아래 명령어를 능동적으로 실행하여 스스로 테스트하고 검증해야 합니다. (모노리포 경우 Root 명령어와 Workspace 명령어를 명시하십시오.)
+**[피드백 루프]** 에이전트는 코드 작성 및 수정 후, 아래 명령어를 능동적으로 실행하여 스스로 테스트하고 검증해야 합니다.
 
-| Task           | Command            | Description                                    |
-| :------------- | :----------------- | :--------------------------------------------- |
-| **Install**    | [설치 명령어]      | (예: pnpm install npm i)                       |
-| **Dev Server** | [실행 명령어]      | (예: pnpm dev --filter web, docker-compose up) |
-| **Build**      | [빌드 명령어]      | (예: pnpm build, npx build api)                |
-| **Test**       | [테스트 명령어]    | (예: pnpm test, yarn workspace i test)         |
-| **Lint**       | [포맷/린트 명령어] | (예: pnpm lint, biome check .)                 |
+| Task           | Command                                | Description                                     |
+| :------------- | :------------------------------------- | :---------------------------------------------- |
+| **Install**    | `uv sync`                              | 의존성 설치 및 동기화                           |
+| **Dev Server** | `uv run python manage.py runserver`    | 장고 개발 서버 실행                             |
+| **Test**       | `uv run python manage.py test`         | 유닛 및 통합 테스트 실행                        |
+| **Lint/Format**| `uv run ruff check .` / `uv run black .`| 코드 스타일 및 정적 분석                        |
+| **Migration**  | `uv run python manage.py migrate`      | 데이터베이스 스키마 동기화                      |
+| **Conductor**  | `/conductor:implement`                 | Conductor 방법론에 따른 태스크 구현 시작        |
 
 ### **1.4. 핵심 디렉토리 구조 (High-level Directory Map)**
 
-**[주의]** 이 구조도는 에이전트가 코드를 탐색하거나 생성할 위치를 파악하기 위한 디렉토리 라우팅 지도입니다. 프로젝트 리포지토리의 성격에 따라 적절한 구조를 명시하십시오.
+**[주의]** 이 구조도는 에이전트가 코드를 탐색하거나 생성할 위치를 파악하기 위한 디렉토리 라우팅 지도입니다.
 
-### 프로젝트에서 사용하는 폴더
-
-- `docs/` : 프로젝트 산출물 및 기획/아키텍처 문서
-
-- 싱글리포 구조 예시1
-  - `src`: 현재 프로젝트의 소스 루트
-- 모노리포 구조 예시1
-  - `apps/web/` : (예시) 프론트엔드 워크스페이스 경로
-  - `apps/api/` : (예시) 백엔드 워크스페이스 경로
-  - `packages/ui/` : (예시) 공용 UI 컴포넌트 패키지
-- 모노리포 구조 예시2
-  - `frontend/` : (예시) 프론트엔드 워크스페이스 경로
-  - `backend/` : (예시) 백엔드 워크스페이스 경로
-  - `packages/` : (예시) 공용 UI 컴포넌트 패키지
-- LLM 에이전트 사용에 따른 폴더 예시1
-  - `.agents/` : (예시) LLM AGENT 들의 범용 설정 폴더
-  - `.gemini/`: (예시) gemini-cli 설정 폴더
+- `conductor/` : **[Conductor Methodology Root]** 프로젝트 관리 및 워크플로우 제어
+  - `index.md` : 프로젝트 컨텍스트 색인
+  - `product.md` : 제품 정의 및 비전
+  - `product-guidelines.md` : UX 및 스타일 가이드라인
+  - `tech-stack.md` : 기술 스택 명세
+  - `workflow.md` : 개발 프로세스 및 TDD 규칙
+  - `tracks.md` : 전체 트랙 레지스트리
+  - `tracks/` : 개별 트랙별 계획 및 상세 문서
+- `core/` : (예정) 장고 메인 애플리케이션 및 설정
+- `agents/` : (예정) AI 에이전트 로직 (Inquiry, Critique, Summarizer)
+- `templates/` : 장고 템플릿 파일
+- `static/` : 정적 자산 (CSS, JS, Images)
+- `tests/` : 테스트 코드 모음
 
 ## **2. 🛡️ 에이전트 페르소나 및 하네스 철학 (Persona & Harness Philosophy)**
 
