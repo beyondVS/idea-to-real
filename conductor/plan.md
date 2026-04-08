@@ -1,0 +1,37 @@
+# Implementation Plan: Build core conversational inquiry engine MVP
+
+## Phase 1: Project Setup and Data Models
+- [ ] Task: Setup Django project and PostgreSQL connection
+    - [ ] Write Tests
+    - [ ] Implement Feature
+- [ ] Task: Create data models for Session, Message, and ProblemSpecification
+    - [ ] Write Tests
+    - [ ] Implement Feature
+- [ ] Task: Conductor - User Manual Verification 'Phase 1: Project Setup and Data Models' (Protocol in workflow.md)
+
+## Phase 2: Core Chat Interface (UI & Basic Logic)
+- [ ] Task: Build Django views and templates for the basic chat interface
+    - [ ] Write Tests
+    - [ ] Implement Feature
+- [ ] Task: Implement message saving and retrieval logic
+    - [ ] Write Tests
+    - [ ] Implement Feature
+- [ ] Task: Conductor - User Manual Verification 'Phase 2: Core Chat Interface (UI & Basic Logic)' (Protocol in workflow.md)
+
+## Phase 3: LLM Integration (Inquiry & Critique)
+- [ ] Task: Integrate primary LLM agent for Socratic questioning
+    - [ ] Write Tests
+    - [ ] Implement Feature
+- [ ] Task: Integrate secondary LLM agent for real-time logical critique
+    - [ ] Write Tests
+    - [ ] Implement Feature
+- [ ] Task: Conductor - User Manual Verification 'Phase 3: LLM Integration (Inquiry & Critique)' (Protocol in workflow.md)
+
+## Phase 4: Document Generation and Export
+- [ ] Task: Implement logic to summarize chat history into a structured specification
+    - [ ] Write Tests
+    - [ ] Implement Feature
+- [ ] Task: Create endpoints to export specification as Markdown and JSON
+    - [ ] Write Tests
+    - [ ] Implement Feature
+- [ ] Task: Conductor - User Manual Verification 'Phase 4: Document Generation and Export' (Protocol in workflow.md)
