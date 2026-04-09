@@ -4,9 +4,9 @@
 - [x] Task: Setup Django project and PostgreSQL connection [cc27af0]
     - [x] Write Tests
     - [x] Implement Feature
-- [ ] Task: Create data models for Session, Message, and ProblemSpecification
-    - [ ] Write Tests
-    - [ ] Implement Feature
+- [x] Task: Create data models for Session, Message, and ProblemSpecification [b811261]
+    - [x] Write Tests
+    - [x] Implement Feature
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Project Setup and Data Models' (Protocol in workflow.md)
 
 ## Phase 2: Core Chat Interface (UI & Basic Logic)
