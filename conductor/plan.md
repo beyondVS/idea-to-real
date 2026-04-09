@@ -1,9 +1,9 @@
 # Implementation Plan: Build core conversational inquiry engine MVP
 
 ## Phase 1: Project Setup and Data Models
-- [~] Task: Setup Django project and PostgreSQL connection
-    - [ ] Write Tests
-    - [ ] Implement Feature
+- [x] Task: Setup Django project and PostgreSQL connection [cc27af0]
+    - [x] Write Tests
+    - [x] Implement Feature
 - [ ] Task: Create data models for Session, Message, and ProblemSpecification
     - [ ] Write Tests
     - [ ] Implement Feature
