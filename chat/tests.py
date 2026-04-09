@@ -52,10 +52,32 @@ class ViewTest(TestCase):
         self.assertContains(response, "Test View Session")
 
     def test_message_sending(self):
-        """메시지 전송 기능이 정상적으로 작동하는지 확인합니다."""
-        response = self.client.post(reverse('chat:send_message', args=[self.session.id]), {
-            'content': 'New user message'
-        })
-        self.assertEqual(response.status_code, 302)  # 성공 후 리다이렉트
-        self.assertEqual(Message.objects.filter(session=self.session, sender='user').count(), 1)
-        self.assertEqual(Message.objects.first().content, 'New user message')
+        """메시지 전송 기능이 정상적으로 작동하는지 확인합니다. (Mock 사용)"""
+        from unittest.mock import patch
+        with patch('agents.inquiry.InquiryAgent.generate_question') as mock_ai:
+            mock_ai.return_value = "Mock AI response"
+            response = self.client.post(reverse('chat:send_message', args=[self.session.id]), {
+                'content': 'New user message'
+            })
+            self.assertEqual(response.status_code, 302)  # 성공 후 리다이렉트
+            self.assertEqual(Message.objects.filter(session=self.session, sender='user').count(), 1)
+            self.assertEqual(Message.objects.filter(session=self.session, sender='ai_inquiry').count(), 1)
+
+    def test_ai_response_integration(self):
+        """사용자 메시지 전송 후 AI 응답이 생성되는지 확인합니다. (Mock 사용)"""
+        from unittest.mock import patch
+        
+        with patch('agents.inquiry.InquiryAgent.generate_question') as mock_ai:
+            mock_ai.return_value = "This is a mock AI question."
+            
+            response = self.client.post(reverse('chat:send_message', args=[self.session.id]), {
+                'content': 'I want to build a house.'
+            })
+            
+            # AI 에이전트가 호출되었는지 확인
+            mock_ai.assert_called_once()
+            
+            # AI 메시지가 저장되었는지 확인
+            ai_messages = Message.objects.filter(session=self.session, sender='ai_inquiry')
+            self.assertEqual(ai_messages.count(), 1)
+            self.assertEqual(ai_messages.first().content, "This is a mock AI question.")
