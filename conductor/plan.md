@@ -9,14 +9,14 @@
     - [x] Implement Feature
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Project Setup and Data Models' (Protocol in workflow.md) [d39e86c]
 
-## Phase 2: Core Chat Interface (UI & Basic Logic)
+## Phase 2: Core Chat Interface (UI & Basic Logic) [checkpoint: 18ba82a]
 - [x] Task: Build Django views and templates for the basic chat interface [274ce95]
     - [x] Write Tests
     - [x] Implement Feature
 - [x] Task: Implement message saving and retrieval logic [6d0acdb]
     - [x] Write Tests
     - [x] Implement Feature
-- [~] Task: Conductor - User Manual Verification 'Phase 2: Core Chat Interface (UI & Basic Logic)' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 2: Core Chat Interface (UI & Basic Logic)' (Protocol in workflow.md) [18ba82a]
 
 ## Phase 3: LLM Integration (Inquiry & Critique)
 - [ ] Task: Integrate primary LLM agent for Socratic questioning
