@@ -13,9 +13,9 @@
 - [x] Task: Build Django views and templates for the basic chat interface [274ce95]
     - [x] Write Tests
     - [x] Implement Feature
-- [ ] Task: Implement message saving and retrieval logic
-    - [ ] Write Tests
-    - [ ] Implement Feature
+- [x] Task: Implement message saving and retrieval logic [6d0acdb]
+    - [x] Write Tests
+    - [x] Implement Feature
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Core Chat Interface (UI & Basic Logic)' (Protocol in workflow.md)
 
 ## Phase 3: LLM Integration (Inquiry & Critique)
