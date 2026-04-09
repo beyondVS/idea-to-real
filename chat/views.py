@@ -19,3 +19,16 @@ def create_session(request):
         session = Session.objects.create(title=title)
         return redirect('chat:detail', session_id=session.id)
     return redirect('chat:index')
+
+def send_message(request, session_id):
+    """메시지 전송 및 저장"""
+    session = get_object_or_404(Session, id=session_id)
+    if request.method == 'POST':
+        content = request.POST.get('content')
+        if content:
+            Message.objects.create(
+                session=session,
+                sender='user',
+                content=content
+            )
+    return redirect('chat:detail', session_id=session.id)

@@ -50,3 +50,12 @@ class ViewTest(TestCase):
         response = self.client.get(reverse('chat:detail', args=[self.session.id]))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Test View Session")
+
+    def test_message_sending(self):
+        """메시지 전송 기능이 정상적으로 작동하는지 확인합니다."""
+        response = self.client.post(reverse('chat:send_message', args=[self.session.id]), {
+            'content': 'New user message'
+        })
+        self.assertEqual(response.status_code, 302)  # 성공 후 리다이렉트
+        self.assertEqual(Message.objects.filter(session=self.session, sender='user').count(), 1)
+        self.assertEqual(Message.objects.first().content, 'New user message')
