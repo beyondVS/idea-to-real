@@ -10,9 +10,9 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Project Setup and Data Models' (Protocol in workflow.md) [d39e86c]
 
 ## Phase 2: Core Chat Interface (UI & Basic Logic)
-- [ ] Task: Build Django views and templates for the basic chat interface
-    - [ ] Write Tests
-    - [ ] Implement Feature
+- [x] Task: Build Django views and templates for the basic chat interface [274ce95]
+    - [x] Write Tests
+    - [x] Implement Feature
 - [ ] Task: Implement message saving and retrieval logic
     - [ ] Write Tests
     - [ ] Implement Feature
