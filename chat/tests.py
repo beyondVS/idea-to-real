@@ -54,30 +54,39 @@ class ViewTest(TestCase):
     def test_message_sending(self):
         """메시지 전송 기능이 정상적으로 작동하는지 확인합니다. (Mock 사용)"""
         from unittest.mock import patch
-        with patch('agents.inquiry.InquiryAgent.generate_question') as mock_ai:
-            mock_ai.return_value = "Mock AI response"
+        with patch('agents.inquiry.InquiryAgent.generate_question') as mock_inquiry, \
+             patch('agents.critique.CritiqueAgent.generate_critique') as mock_critique:
+            
+            mock_inquiry.return_value = "Mock AI inquiry"
+            mock_critique.return_value = "Mock AI critique"
+            
             response = self.client.post(reverse('chat:send_message', args=[self.session.id]), {
                 'content': 'New user message'
             })
             self.assertEqual(response.status_code, 302)  # 성공 후 리다이렉트
             self.assertEqual(Message.objects.filter(session=self.session, sender='user').count(), 1)
             self.assertEqual(Message.objects.filter(session=self.session, sender='ai_inquiry').count(), 1)
+            self.assertEqual(Message.objects.filter(session=self.session, sender='ai_critique').count(), 1)
 
-    def test_ai_response_integration(self):
-        """사용자 메시지 전송 후 AI 응답이 생성되는지 확인합니다. (Mock 사용)"""
+    def test_multi_agent_integration(self):
+        """사용자 메시지 전송 후 InquiryAgent와 CritiqueAgent가 모두 호출되는지 확인합니다."""
         from unittest.mock import patch
         
-        with patch('agents.inquiry.InquiryAgent.generate_question') as mock_ai:
-            mock_ai.return_value = "This is a mock AI question."
+        with patch('agents.inquiry.InquiryAgent.generate_question') as mock_inquiry, \
+             patch('agents.critique.CritiqueAgent.generate_critique') as mock_critique:
+            
+            mock_inquiry.return_value = "AI Inquiry Question"
+            mock_critique.return_value = "AI Logical Critique"
             
             response = self.client.post(reverse('chat:send_message', args=[self.session.id]), {
-                'content': 'I want to build a house.'
+                'content': 'I want to build a bridge.'
             })
             
-            # AI 에이전트가 호출되었는지 확인
-            mock_ai.assert_called_once()
+            # 두 에이전트가 모두 호출되었는지 확인
+            mock_inquiry.assert_called_once()
+            mock_critique.assert_called_once()
             
-            # AI 메시지가 저장되었는지 확인
-            ai_messages = Message.objects.filter(session=self.session, sender='ai_inquiry')
-            self.assertEqual(ai_messages.count(), 1)
-            self.assertEqual(ai_messages.first().content, "This is a mock AI question.")
+            # 메시지 저장 확인
+            self.assertEqual(Message.objects.filter(session=self.session, sender='user').count(), 1)
+            self.assertEqual(Message.objects.filter(session=self.session, sender='ai_inquiry').count(), 1)
+            self.assertEqual(Message.objects.filter(session=self.session, sender='ai_critique').count(), 1)
