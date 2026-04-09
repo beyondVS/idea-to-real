@@ -7,7 +7,7 @@
 - [x] Task: Create data models for Session, Message, and ProblemSpecification [b811261]
     - [x] Write Tests
     - [x] Implement Feature
-- [ ] Task: Conductor - User Manual Verification 'Phase 1: Project Setup and Data Models' (Protocol in workflow.md)
+- [~] Task: Conductor - User Manual Verification 'Phase 1: Project Setup and Data Models' (Protocol in workflow.md)
 
 ## Phase 2: Core Chat Interface (UI & Basic Logic)
 - [ ] Task: Build Django views and templates for the basic chat interface
