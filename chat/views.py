@@ -6,16 +6,40 @@ from agents.critique import CritiqueAgent
 from agents.summarizer import SummarizeAgent
 
 def index(request):
+    """채팅 세션 목록을 표시하는 메인 페이지 뷰입니다.
+
+    Args:
+        request: Django HttpRequest 객체입니다.
+
+    Returns:
+        세션 목록이 렌더링된 HttpResponse 객체입니다.
+    """
     sessions = Session.objects.all().order_by('-created_at')
     return render(request, 'chat/index.html', {'sessions': sessions})
 
 def detail(request, session_id):
+    """특정 채팅 세션의 상세 메시지 내역을 표시하는 뷰입니다.
+
+    Args:
+        request: Django HttpRequest 객체입니다.
+        session_id: 조회할 세션의 UUID입니다.
+
+    Returns:
+        채팅 내역이 렌더링된 HttpResponse 객체입니다.
+    """
     session = get_object_or_404(Session, id=session_id)
     messages = session.messages.all().order_by('timestamp')
     return render(request, 'chat/detail.html', {'session': session, 'messages': messages})
 
 def create_session(request):
-    """새 채팅 세션 생성"""
+    """새로운 채팅 세션을 생성하고 상세 페이지로 리다이렉트합니다.
+
+    Args:
+        request: Django HttpRequest 객체입니다.
+
+    Returns:
+        생성된 세션 페이지로의 HttpResponseRedirect 객체입니다.
+    """
     if request.method == 'POST':
         title = request.POST.get('title', 'New Session')
         session = Session.objects.create(title=title)
@@ -23,7 +47,15 @@ def create_session(request):
     return redirect('chat:index')
 
 def send_message(request, session_id):
-    """메시지 전송 및 저장, 그리고 AI 에이전트들의 응답 생성"""
+    """사용자 메시지를 처리하고 AI 에이전트(Inquiry, Critique)의 응답을 생성합니다.
+
+    Args:
+        request: Django HttpRequest 객체입니다.
+        session_id: 메시지를 보낼 세션의 UUID입니다.
+
+    Returns:
+        세션 상세 페이지로의 HttpResponseRedirect 객체입니다.
+    """
     session = get_object_or_404(Session, id=session_id)
     if request.method == 'POST':
         content = request.POST.get('content')
@@ -34,10 +66,10 @@ def send_message(request, session_id):
                 sender='user',
                 content=content
             )
-            
+
             # 대화 기록 가져오기
             chat_history = session.messages.all().order_by('timestamp')
-            
+
             # 2. Inquiry Agent 응답 생성
             inquiry_agent = InquiryAgent()
             ai_inquiry_content = inquiry_agent.generate_question(chat_history)
@@ -46,7 +78,7 @@ def send_message(request, session_id):
                 sender='ai_inquiry',
                 content=ai_inquiry_content
             )
-            
+
             # 3. Critique Agent 응답 생성
             critique_agent = CritiqueAgent()
             ai_critique_content = critique_agent.generate_critique(chat_history)
@@ -55,17 +87,25 @@ def send_message(request, session_id):
                 sender='ai_critique',
                 content=ai_critique_content
             )
-            
+
     return redirect('chat:detail', session_id=session.id)
 
 def _get_or_create_specification(session):
+    """세션의 대화 내역을 바탕으로 문제 기술서를 생성하거나 업데이트합니다.
+
+    Args:
+        session: ProblemSpecification을 생성할 Session 객체입니다.
+
+    Returns:
+        생성된 문제 기술서의 내용(딕셔너리)입니다. 대화 내역이 없으면 에러 메시지를 반환합니다.
+    """
     chat_history = session.messages.all().order_by('timestamp')
     if not chat_history.exists():
         return {"error": "No chat history available to summarize."}
-        
+
     agent = SummarizeAgent()
     summary_data = agent.summarize(chat_history)
-    
+
     spec, created = ProblemSpecification.objects.update_or_create(
         session=session,
         defaults={'content': summary_data}
@@ -73,18 +113,36 @@ def _get_or_create_specification(session):
     if not created:
         spec.version += 1
         spec.save()
-        
+
     return spec.content
 
 def export_json(request, session_id):
+    """문제 기술서를 JSON 형식으로 내보내는 뷰입니다.
+
+    Args:
+        request: Django HttpRequest 객체입니다.
+        session_id: 내보낼 세션의 UUID입니다.
+
+    Returns:
+        JSON 데이터가 담긴 JsonResponse 객체입니다.
+    """
     session = get_object_or_404(Session, id=session_id)
     content = _get_or_create_specification(session)
     return JsonResponse(content)
 
 def export_markdown(request, session_id):
+    """문제 기술서를 Markdown 형식으로 내보내는 뷰입니다.
+
+    Args:
+        request: Django HttpRequest 객체입니다.
+        session_id: 내보낼 세션의 UUID입니다.
+
+    Returns:
+        Markdown 파일 다운로드를 위한 HttpResponse 객체입니다.
+    """
     session = get_object_or_404(Session, id=session_id)
     content = _get_or_create_specification(session)
-    
+
     if "error" in content:
         md_text = f"# Error\n\n{content['error']}"
     else:
@@ -98,7 +156,7 @@ def export_markdown(request, session_id):
         for constraint in content.get('constraints', []):
             md_text += f"- {constraint}\n"
         md_text += f"\n## Success Criteria\n{content.get('success_criteria', '')}\n"
-        
+
     response = HttpResponse(md_text, content_type="text/markdown; charset=utf-8")
     response['Content-Disposition'] = f'attachment; filename="specification_{session.id}.md"'
     return response

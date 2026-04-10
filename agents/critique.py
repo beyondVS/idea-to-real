@@ -1,6 +1,11 @@
 from .base import BaseAgent
 
 class CritiqueAgent(BaseAgent):
+    """사용자와 Inquiry 에이전트 간의 대화를 분석하여 논리적 비판을 제공하는 에이전트입니다.
+
+    Attributes:
+        SYSTEM_PROMPT: 논리적 비판을 위한 시스템 프롬프트입니다.
+    """
     SYSTEM_PROMPT = """
 당신은 'Problem Specification AI System'의 'Logical Critique Agent'입니다.
 당신의 임무는 사용자와 Inquiry 에이전트 간의 대화를 실시간으로 모니터링하여 논리적 비약이나 모순을 찾아내는 것입니다.
@@ -18,9 +23,16 @@ class CritiqueAgent(BaseAgent):
 """
 
     def generate_critique(self, chat_history):
-        """대화 기록을 분석하여 논리적 비판을 생성합니다."""
+        """대화 기록을 분석하여 논리적 비판을 생성합니다.
+
+        Args:
+            chat_history: Django 모델의 Message 객체 리스트입니다.
+
+        Returns:
+            AI가 생성한 비판 또는 확인 메시지 문자열입니다.
+        """
         messages = [{"role": "system", "content": self.SYSTEM_PROMPT}]
-        
+
         for msg in chat_history:
             if msg.sender == "user":
                 role = "user"
@@ -29,5 +41,5 @@ class CritiqueAgent(BaseAgent):
             else:
                 continue # 이전 비판 내용은 무시하거나 별도 처리
             messages.append({"role": role, "content": msg.content})
-            
+
         return self.get_response(messages)

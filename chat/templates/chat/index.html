@@ -4,31 +4,31 @@
 
 {% block content %}
 <section class="card">
-    <h2>Start a New Session</h2>
-    <form action="{% url 'chat:create_session' %}" method="post">
-        {% csrf_token %}
-        <div style="margin-bottom: 1rem;">
-            <label for="title" style="display: block; margin-bottom: 0.5rem;">Session Title</label>
-            <input type="text" name="title" id="title" placeholder="What problem are you solving?" style="width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px;" required>
-        </div>
-        <button type="submit" class="btn">Start Session</button>
-    </form>
+  <h2>Start a New Session</h2>
+  <form action="{% url 'chat:create_session' %}" method="post">
+    {% csrf_token %}
+    <div style="margin-bottom: 1rem;">
+      <label for="title" style="display: block; margin-bottom: 0.5rem;">Session Title</label>
+      <input type="text" name="title" id="title" placeholder="What problem are you solving?" style="width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px;" required>
+    </div>
+    <button type="submit" class="btn">Start Session</button>
+  </form>
 </section>
 
 <section>
-    <h2>Recent Sessions</h2>
-    {% if sessions %}
-        {% for session in sessions %}
-            <div class="card" style="display: flex; justify-content: space-between; align-items: center;">
-                <div>
-                    <h3 style="margin: 0;"><a href="{% url 'chat:detail' session.id %}" style="color: var(--primary-color); text-decoration: none;">{{ session.title|default:"Unnamed Session" }}</a></h3>
-                    <small style="color: #666;">Created: {{ session.created_at|date:"Y-m-d H:i" }}</small>
-                </div>
-                <a href="{% url 'chat:detail' session.id %}" class="btn" style="background-color: var(--secondary-color);">Open</a>
-            </div>
-        {% endfor %}
-    {% else %}
-        <p>No sessions yet. Start one above!</p>
-    {% endif %}
+  <h2>Recent Sessions</h2>
+  {% if sessions %}
+    {% for session in sessions %}
+      <div class="card" style="display: flex; justify-content: space-between; align-items: center;">
+        <div>
+          <h3 style="margin: 0;"><a href="{% url 'chat:detail' session.id %}" style="color: var(--primary-color); text-decoration: none;">{{ session.title|default:"Unnamed Session" }}</a></h3>
+          <small style="color: #666;">Created: {{ session.created_at|date:"Y-m-d H:i" }}</small>
+        </div>
+        <a href="{% url 'chat:detail' session.id %}" class="btn" style="background-color: var(--secondary-color);">Open</a>
+      </div>
+    {% endfor %}
+  {% else %}
+    <p>No sessions yet. Start one above!</p>
+  {% endif %}
 </section>
 {% endblock %}

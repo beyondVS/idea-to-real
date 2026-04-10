@@ -1,6 +1,11 @@
 from .base import BaseAgent
 
 class InquiryAgent(BaseAgent):
+    """사용자에게 질문을 던져 아이디어를 구체화하는 소크라테스식 질문 엔진입니다.
+
+    Attributes:
+        SYSTEM_PROMPT: 소크라테스식 질문을 위한 시스템 프롬프트입니다.
+    """
     SYSTEM_PROMPT = """
 당신은 'Problem Specification AI System'의 핵심 엔진인 'Socratic Inquiry Agent'입니다.
 당신의 목표는 사용자의 간략한 아이디어나 직면한 문제를 구조화된 문제 기술서로 발전시키기 위해 질문을 던지는 것입니다.
@@ -17,12 +22,19 @@ class InquiryAgent(BaseAgent):
 """
 
     def generate_question(self, chat_history):
-        """채팅 기록을 바탕으로 다음 소크라테스식 질문을 생성합니다."""
+        """채팅 기록을 바탕으로 다음 소크라테스식 질문을 생성합니다.
+
+        Args:
+            chat_history: Django 모델의 Message 객체 리스트 또는 딕셔너리 리스트입니다.
+
+        Returns:
+            AI가 생성한 질문 문자열입니다.
+        """
         messages = [{"role": "system", "content": self.SYSTEM_PROMPT}]
-        
+
         # 이전 대화 내용을 OpenAI 메시지 형식으로 변환
         for msg in chat_history:
             role = "user" if msg.sender == "user" else "assistant"
             messages.append({"role": role, "content": msg.content})
-            
+
         return self.get_response(messages)
