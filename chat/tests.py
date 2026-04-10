@@ -68,6 +68,26 @@ class ViewTest(TestCase):
             self.assertEqual(Message.objects.filter(session=self.session, sender='ai_inquiry').count(), 1)
             self.assertEqual(Message.objects.filter(session=self.session, sender='ai_critique').count(), 1)
 
+    def test_export_json(self):
+        """JSON 포맷으로 명세서를 성공적으로 반환하는지 확인합니다."""
+        Message.objects.create(session=self.session, sender="user", content="Hi")
+        from unittest.mock import patch
+        with patch('agents.summarizer.SummarizeAgent.summarize') as mock_summarize:
+            mock_summarize.return_value = {"problem_statement": "Test"}
+            response = self.client.get(reverse('chat:export_json', args=[self.session.id]))
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(response['Content-Type'], 'application/json')
+        
+    def test_export_markdown(self):
+        """Markdown 포맷으로 명세서를 성공적으로 반환하는지 확인합니다."""
+        Message.objects.create(session=self.session, sender="user", content="Hi")
+        from unittest.mock import patch
+        with patch('agents.summarizer.SummarizeAgent.summarize') as mock_summarize:
+            mock_summarize.return_value = {"problem_statement": "Test"}
+            response = self.client.get(reverse('chat:export_markdown', args=[self.session.id]))
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(response['Content-Type'], 'text/markdown; charset=utf-8')
+        
     def test_multi_agent_integration(self):
         """사용자 메시지 전송 후 InquiryAgent와 CritiqueAgent가 모두 호출되는지 확인합니다."""
         from unittest.mock import patch

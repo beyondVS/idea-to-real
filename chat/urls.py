@@ -8,4 +8,7 @@ urlpatterns = [
     path('session/<uuid:session_id>/', views.detail, name='detail'),
     path('create/', views.create_session, name='create_session'),
     path('session/<uuid:session_id>/send/', views.send_message, name='send_message'),
+    path('session/<uuid:session_id>/export/json/', views.export_json, name='export_json'),
+    path('session/<uuid:session_id>/export/markdown/', views.export_markdown, name='export_markdown'),
 ]
+

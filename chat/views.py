@@ -1,15 +1,15 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from .models import Session, Message
+from django.http import JsonResponse, HttpResponse
+from .models import Session, Message, ProblemSpecification
 from agents.inquiry import InquiryAgent
 from agents.critique import CritiqueAgent
+from agents.summarizer import SummarizeAgent
 
 def index(request):
-    # ... (기존 코드와 동일) ...
     sessions = Session.objects.all().order_by('-created_at')
     return render(request, 'chat/index.html', {'sessions': sessions})
 
 def detail(request, session_id):
-    # ... (기존 코드와 동일) ...
     session = get_object_or_404(Session, id=session_id)
     messages = session.messages.all().order_by('timestamp')
     return render(request, 'chat/detail.html', {'session': session, 'messages': messages})
@@ -57,3 +57,48 @@ def send_message(request, session_id):
             )
             
     return redirect('chat:detail', session_id=session.id)
+
+def _get_or_create_specification(session):
+    chat_history = session.messages.all().order_by('timestamp')
+    if not chat_history.exists():
+        return {"error": "No chat history available to summarize."}
+        
+    agent = SummarizeAgent()
+    summary_data = agent.summarize(chat_history)
+    
+    spec, created = ProblemSpecification.objects.update_or_create(
+        session=session,
+        defaults={'content': summary_data}
+    )
+    if not created:
+        spec.version += 1
+        spec.save()
+        
+    return spec.content
+
+def export_json(request, session_id):
+    session = get_object_or_404(Session, id=session_id)
+    content = _get_or_create_specification(session)
+    return JsonResponse(content)
+
+def export_markdown(request, session_id):
+    session = get_object_or_404(Session, id=session_id)
+    content = _get_or_create_specification(session)
+    
+    if "error" in content:
+        md_text = f"# Error\n\n{content['error']}"
+    else:
+        md_text = f"# Problem Specification: {session.title}\n\n"
+        md_text += f"## Problem Statement\n{content.get('problem_statement', '')}\n\n"
+        md_text += f"## Target Users\n{content.get('target_users', '')}\n\n"
+        md_text += f"## Core Features\n"
+        for feature in content.get('core_features', []):
+            md_text += f"- {feature}\n"
+        md_text += f"\n## Constraints\n"
+        for constraint in content.get('constraints', []):
+            md_text += f"- {constraint}\n"
+        md_text += f"\n## Success Criteria\n{content.get('success_criteria', '')}\n"
+        
+    response = HttpResponse(md_text, content_type="text/markdown; charset=utf-8")
+    response['Content-Disposition'] = f'attachment; filename="specification_{session.id}.md"'
+    return response
