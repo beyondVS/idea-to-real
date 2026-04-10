@@ -27,11 +27,11 @@
     - [x] Implement Feature
 - [x] Task: Conductor - User Manual Verification 'Phase 3: LLM Integration (Inquiry & Critique)' (Protocol in workflow.md) [2512445]
 
-## Phase 4: Document Generation and Export
+## Phase 4: Document Generation and Export [checkpoint: c0f46f6]
 - [x] Task: Implement logic to summarize chat history into a structured specification [c113567]
     - [x] Write Tests
     - [x] Implement Feature
 - [x] Task: Create endpoints to export specification as Markdown and JSON [32201dd]
     - [x] Write Tests
     - [x] Implement Feature
-- [ ] Task: Conductor - User Manual Verification 'Phase 4: Document Generation and Export' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 4: Document Generation and Export' (Protocol in workflow.md) [c0f46f6]
