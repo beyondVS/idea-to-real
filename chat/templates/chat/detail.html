@@ -112,7 +112,8 @@
 </div>
 
 <div style="margin-top: 1.5rem; text-align: right;">
-    <a href="#" class="btn" style="background-color: var(--secondary-color);">Generate Specification</a>
+    <a href="{% url 'chat:export_markdown' session.id %}" class="btn" style="background-color: var(--secondary-color);">Export Markdown</a>
+    <a href="{% url 'chat:export_json' session.id %}" class="btn" style="background-color: var(--secondary-color); margin-left: 0.5rem;">Export JSON</a>
 </div>
 {% endblock %}
 
