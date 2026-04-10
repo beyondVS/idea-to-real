@@ -31,7 +31,7 @@
 - [x] Task: Implement logic to summarize chat history into a structured specification [c113567]
     - [x] Write Tests
     - [x] Implement Feature
-- [ ] Task: Create endpoints to export specification as Markdown and JSON
-    - [ ] Write Tests
-    - [ ] Implement Feature
+- [x] Task: Create endpoints to export specification as Markdown and JSON [32201dd]
+    - [x] Write Tests
+    - [x] Implement Feature
 - [ ] Task: Conductor - User Manual Verification 'Phase 4: Document Generation and Export' (Protocol in workflow.md)
