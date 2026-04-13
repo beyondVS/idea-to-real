@@ -36,21 +36,28 @@ class GeminiProvider(BaseLLMProvider):
         self.model = model
 
     def generate_response(self, messages, **kwargs):
-        # google-genai는 content 형식을 사용함. 간단한 변환 시도.
-        # 실제 구현에서는 더 정교한 변환이 필요할 수 있음.
+        # google-genai는 system_instruction과 contents를 분리하여 처리함
+        system_instruction = next((m['content'] for m in messages if m['role'] == 'system'), None)
+        
         contents = []
         for msg in messages:
-            role = "user" if msg['role'] == "user" else "model"
             if msg['role'] == "system":
-                # Gemini 2.0 SDK에서는 system_instruction을 따로 받기도 하지만 
-                # 여기서는 단순화를 위해 처리
-                role = "user" # 시스템 프롬프트 처리는 SDK 버전에 따라 다름
+                continue
+            role = "user" if msg['role'] == "user" else "model"
             contents.append({"role": role, "parts": [{"text": msg['content']}]})
         
+        config = {}
+        if system_instruction:
+            config['system_instruction'] = system_instruction
+        
+        # kwargs에 있는 설정들 (max_output_tokens 등) 통합
+        if kwargs:
+            config.update(kwargs)
+
         response = self.client.models.generate_content(
             model=self.model,
             contents=contents,
-            **kwargs
+            config=config if config else None
         )
         return response.text
 
@@ -135,9 +142,13 @@ class BaseAgent:
         """BaseAgent를 초기화합니다.
 
         Args:
-            provider: 사용할 LLM 프로바이더 인스턴스입니다. 제공되지 않으면 GeminiProvider가 기본값입니다.
+            provider: 사용할 LLM 프로바이더 인스턴스입니다. 제공되지 않으면 ProviderFactory를 통해 생성합니다.
         """
-        self.provider = provider or GeminiProvider()
+        if provider:
+            self.provider = provider
+        else:
+            factory = ProviderFactory()
+            self.provider = factory.get_provider(self.__class__.__name__)
 
     def get_response(self, messages, **kwargs):
         """할당된 프로바이더를 통해 응답을 생성합니다.
@@ -150,3 +161,11 @@ class BaseAgent:
             에이전트가 생성한 응답 텍스트입니다.
         """
         return self.provider.generate_response(messages, **kwargs)
+
+    def handle_tool_call(self, tool_call):
+        """할당된 프로바이더를 통해 도구 호출을 처리합니다.
+
+        Args:
+            tool_call: 도구 호출 정보입니다.
+        """
+        return self.provider.handle_tool_call(tool_call)
