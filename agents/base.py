@@ -62,7 +62,7 @@ class GeminiProvider(BaseLLMProvider):
         return response.text
 
     def handle_tool_call(self, tool_call):
-        # TODO: Implement tool call handling for Gemini
+        # TODO(callo): Implement tool call handling
         pass
 
 class OpenAIProvider(BaseLLMProvider):
@@ -82,7 +82,7 @@ class OpenAIProvider(BaseLLMProvider):
         return response.choices[0].message.content
 
     def handle_tool_call(self, tool_call):
-        # TODO: Implement tool call handling for OpenAI
+        # TODO(callo): Implement tool call handling
         pass
 
 class AnthropicProvider(BaseLLMProvider):
@@ -108,7 +108,7 @@ class AnthropicProvider(BaseLLMProvider):
         return response.content[0].text
 
     def handle_tool_call(self, tool_call):
-        # TODO: Implement tool call handling for Anthropic
+        # TODO(callo): Implement tool call handling
         pass
 
 class ProviderFactory:
