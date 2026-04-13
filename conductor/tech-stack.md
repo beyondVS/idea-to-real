@@ -11,3 +11,9 @@
 
 ## Database
 - **PostgreSQL:** A powerful, open-source object-relational database system, ideal for ensuring data integrity and handling complex queries efficiently.
+
+## AI & LLM Providers
+- **Google Gemini (Default):** Utilized via `google-genai` SDK, specifically the `gemini-2.5-flash-lite` model for fast, cost-effective reasoning.
+- **OpenAI:** Supported via `openai` SDK for tasks requiring high general intelligence.
+- **Anthropic:** Supported via `anthropic` SDK for tasks needing sophisticated reasoning and large contexts.
+- **Multi-Agent Packaging:** A custom abstract provider interface ensures consistent integration across different LLM backends.
