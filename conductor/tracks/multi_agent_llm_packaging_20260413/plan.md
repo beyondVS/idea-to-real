@@ -1,18 +1,18 @@
 # Implementation Plan: LLM Packaging for Multi-Agent Support
 
-## Phase 1: Core LLM Provider Interface
+## Phase 1: Core LLM Provider Interface [checkpoint: 9dfceff]
 다양한 LLM 프로바이더를 일관된 방식으로 다룰 수 있는 인터페이스와 베이스 클래스를 구축합니다.
 
-- [ ] Task: Define Base LLM Provider Class
-    - [ ] `agents/base.py` 에 모든 LLM 프로바이더가 상속받을 추상 베이스 클래스 정의.
-    - [ ] 공통 메서드(`generate_response`, `handle_tool_call` 등) 명세 작성.
-- [ ] Task: Implement Gemini Provider (Default)
-    - [ ] `google-generativeai` 라이브러리를 활용한 Gemini 전용 프로바이더 구현.
-    - [ ] 테스트 코드 작성 및 검증.
-- [ ] Task: Implement OpenAI and Anthropic Providers
-    - [ ] `openai`, `anthropic` 라이브러리를 활용한 프로바이더 구현.
-    - [ ] 각 프로바이더별 단위 테스트 작성 및 통과 확인.
-- [ ] Task: Conductor - User Manual Verification 'Phase 1: Core LLM Provider Interface' (Protocol in workflow.md)
+- [x] Task: Define Base LLM Provider Class [50abecf]
+    - [x] `agents/base.py` 에 모든 LLM 프로바이더가 상속받을 추상 베이스 클래스 정의.
+    - [x] 공통 메서드(`generate_response`, `handle_tool_call` 등) 명세 작성.
+- [x] Task: Implement Gemini Provider (Default) [50abecf]
+    - [x] `google-genai` 라이브러리를 활용한 Gemini 전용 프로바이더 구현.
+    - [x] 테스트 코드 작성 및 검증.
+- [x] Task: Implement OpenAI and Anthropic Providers [50abecf]
+    - [x] `openai`, `anthropic` 라이브러리를 활용한 프로바이더 구현.
+    - [x] 각 프로바이더별 단위 테스트 작성 및 통과 확인.
+- [x] Task: Conductor - User Manual Verification 'Phase 1: Core LLM Provider Interface' (Protocol in workflow.md) [9dfceff]
 
 ## Phase 2: Agent-Model Mapping and Configuration
 에이전트가 환경 변수를 통해 모델을 선택하고 사용할 수 있는 매핑 시스템을 구축합니다.
