@@ -31,6 +31,7 @@ class TestLLMProviders(unittest.TestCase):
         mock_client.models.generate_content.return_value = MagicMock(text="Gemini Response")
         
         provider = GeminiProvider(api_key="test_key")
+        self.assertEqual(provider.model, "gemini-2.5-flash-lite")
         messages = [{"role": "user", "content": "Hello"}]
         response = provider.generate_response(messages)
         
