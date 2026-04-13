@@ -14,15 +14,15 @@
     - [x] 각 프로바이더별 단위 테스트 작성 및 통과 확인.
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Core LLM Provider Interface' (Protocol in workflow.md) [9dfceff]
 
-## Phase 2: Agent-Model Mapping and Configuration
+## Phase 2: Agent-Model Mapping and Configuration [checkpoint: 812628a]
 에이전트가 환경 변수를 통해 모델을 선택하고 사용할 수 있는 매핑 시스템을 구축합니다.
 
-- [ ] Task: Create Provider Factory and Environment Config
-    - [ ] 에이전트 이름에 따라 적절한 프로바이더를 반환하는 `ProviderFactory` 구현.
-    - [ ] 환경 변수(`.env`)를 통한 에이전트별 모델 맵핑 설정 기능 추가.
-- [ ] Task: Update Base Agent to use Provider
-    - [ ] `BaseAgent` 클래스가 직접 API를 호출하는 대신 프로바이더 인터페이스를 사용하도록 리팩토링.
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: Agent-Model Mapping and Configuration' (Protocol in workflow.md)
+- [x] Task: Create Provider Factory and Environment Config [b0d9c22]
+    - [x] 에이전트 이름에 따라 적절한 프로바이더를 반환하는 `ProviderFactory` 구현.
+    - [x] 환경 변수(`.env`)를 통한 에이전트별 모델 맵핑 설정 기능 추가.
+- [x] Task: Update Base Agent to use Provider [b0d9c22]
+    - [x] `BaseAgent` 클래스가 직접 API를 호출하는 대신 프로바이더 인터페이스를 사용하도록 리팩토링.
+- [x] Task: Conductor - User Manual Verification 'Phase 2: Agent-Model Mapping and Configuration' (Protocol in workflow.md) [812628a]
 
 ## Phase 3: Common Agent Features Enhancement
 모든 에이전트가 공통적으로 사용할 수 있는 고급 기능들을 프로바이더 인터페이스에 통합합니다.
