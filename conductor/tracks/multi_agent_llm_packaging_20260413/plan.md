@@ -24,13 +24,13 @@
     - [x] `BaseAgent` 클래스가 직접 API를 호출하는 대신 프로바이더 인터페이스를 사용하도록 리팩토링.
 - [x] Task: Conductor - User Manual Verification 'Phase 2: Agent-Model Mapping and Configuration' (Protocol in workflow.md) [812628a]
 
-## Phase 3: Common Agent Features Enhancement
+## Phase 3: Common Agent Features Enhancement [checkpoint: 1d6c8ed]
 모든 에이전트가 공통적으로 사용할 수 있는 고급 기능들을 프로바이더 인터페이스에 통합합니다.
 
-- [ ] Task: Implement Tool Use Support in Wrapper
-    - [ ] 각 프로바이더의 Tool Calling 기능을 통합된 인터페이스로 노출.
-- [ ] Task: Implement Short-term Memory Context
-    - [ ] 프로바이더 레벨에서 대화 이력을 관리하고 프롬프트에 포함시키는 기능 추가.
-- [ ] Task: Implement System Prompt Customization
-    - [ ] 각 에이전트의 역할에 맞는 시스템 프롬프트를 프로바이더에 전달하는 구조 강화.
-- [ ] Task: Conductor - User Manual Verification 'Phase 3: Common Agent Features Enhancement' (Protocol in workflow.md)
+- [x] Task: Implement Tool Use Support in Wrapper [6ede00a]
+    - [x] 각 프로바이더의 Tool Calling 기능을 통합된 인터페이스로 노출.
+- [x] Task: Implement Short-term Memory Context [6ede00a]
+    - [x] 프로바이더 레벨에서 대화 이력을 관리하고 프롬프트에 포함시키는 기능 추가.
+- [x] Task: Implement System Prompt Customization [6ede00a]
+    - [x] 각 에이전트의 역할에 맞는 시스템 프롬프트를 프로바이더에 전달하는 구조 강화.
+- [x] Task: Conductor - User Manual Verification 'Phase 3: Common Agent Features Enhancement' (Protocol in workflow.md) [1d6c8ed]
