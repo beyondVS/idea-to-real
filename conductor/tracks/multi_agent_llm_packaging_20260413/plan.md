@@ -34,3 +34,6 @@
 - [x] Task: Implement System Prompt Customization [6ede00a]
     - [x] 각 에이전트의 역할에 맞는 시스템 프롬프트를 프로바이더에 전달하는 구조 강화.
 - [x] Task: Conductor - User Manual Verification 'Phase 3: Common Agent Features Enhancement' (Protocol in workflow.md) [1d6c8ed]
+
+## Phase: Review Fixes
+- [x] Task: Apply review suggestions 9db9682
