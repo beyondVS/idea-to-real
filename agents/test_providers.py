@@ -1,6 +1,6 @@
 import unittest
 from unittest.mock import MagicMock, patch
-from agents.base import BaseLLMProvider, BaseAgent, GeminiProvider, OpenAIProvider, AnthropicProvider
+from agents.base import BaseLLMProvider, BaseAgent, GeminiProvider, OpenAIProvider, AnthropicProvider, ProviderFactory
 
 class MockProvider(BaseLLMProvider):
     def generate_response(self, messages, **kwargs):
@@ -60,6 +60,21 @@ class TestLLMProviders(unittest.TestCase):
         response = provider.generate_response(messages)
         
         self.assertEqual(response, "Anthropic Response")
+
+    def test_provider_factory(self):
+        # Default case
+        factory = ProviderFactory()
+        provider = factory.get_provider("InquiryAgent")
+        self.assertIsInstance(provider, GeminiProvider)
+
+        # Environment override case
+        with patch.dict('os.environ', {'AGENT_INQUIRYAGENT_MODEL': 'openai'}):
+            provider = factory.get_provider("InquiryAgent")
+            self.assertIsInstance(provider, OpenAIProvider)
+
+        with patch.dict('os.environ', {'AGENT_CRITIQUEAGENT_MODEL': 'anthropic'}):
+            provider = factory.get_provider("CritiqueAgent")
+            self.assertIsInstance(provider, AnthropicProvider)
 
 if __name__ == '__main__':
     unittest.main()

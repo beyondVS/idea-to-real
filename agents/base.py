@@ -104,6 +104,26 @@ class AnthropicProvider(BaseLLMProvider):
         # TODO: Implement tool call handling for Anthropic
         pass
 
+class ProviderFactory:
+    """에이전트 이름과 설정을 바탕으로 적절한 LLM 프로바이더를 생성하는 팩토리 클래스입니다."""
+
+    def get_provider(self, agent_name):
+        """에이전트 전용 모델 설정을 확인하여 프로바이더를 반환합니다.
+
+        설정 우선순위:
+        1. 환경 변수: AGENT_<AGENT_NAME>_MODEL (예: AGENT_INQUIRYAGENT_MODEL=openai)
+        2. 기본값: GeminiProvider
+        """
+        env_key = f"AGENT_{agent_name.upper()}_MODEL"
+        model_type = os.environ.get(env_key, "gemini").lower()
+
+        if model_type == "openai":
+            return OpenAIProvider()
+        elif model_type == "anthropic":
+            return AnthropicProvider()
+        else:
+            return GeminiProvider()
+
 class BaseAgent:
     """기본 AI 에이전트 클래스입니다. 할당된 LLM 프로바이더를 통해 통신을 담당합니다.
 
