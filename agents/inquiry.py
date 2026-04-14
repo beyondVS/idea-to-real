@@ -1,6 +1,7 @@
 from typing import TypedDict, List, Dict, Any, Annotated
 import operator
 import json
+from langgraph.graph import StateGraph, START, END
 from .base import BaseAgent
 
 class InquiryGraphState(TypedDict):
@@ -23,6 +24,37 @@ class InquiryAgent(BaseAgent):
     Attributes:
         SYSTEM_PROMPT: 소크라테스식 질문을 위한 시스템 프롬프트입니다.
     """
+    def __init__(self, provider=None):
+        super().__init__(provider)
+        self.workflow = self._build_workflow()
+
+    def _build_workflow(self):
+        """LangGraph 워크플로우를 구축하고 컴파일합니다."""
+        builder = StateGraph(InquiryGraphState)
+        
+        # 노드 등록
+        builder.add_node("analyzer", self.analyze_response)
+        builder.add_node("questioner", self.generate_next_question)
+        builder.add_node("empathizer", self.apply_empathy)
+        
+        # 엣지 연결
+        builder.add_edge(START, "analyzer")
+        
+        # Analyzer 이후 조건부 분기
+        builder.add_conditional_edges(
+            "analyzer",
+            self.should_continue,
+            {
+                "continue": "questioner",
+                "end": END
+            }
+        )
+        
+        builder.add_edge("questioner", "empathizer")
+        builder.add_edge("empathizer", END)
+        
+        return builder.compile()
+
     SYSTEM_PROMPT = """
 당신은 'Problem Specification AI System'의 핵심 엔진인 'Socratic Inquiry Agent'입니다.
 당신의 목표는 사용자의 간략한 아이디어나 직면한 문제를 구조화된 문제 기술서로 발전시키기 위해 질문을 던지는 것입니다.
