@@ -37,6 +37,66 @@ class InquiryAgent(BaseAgent):
 사용자의 답변에 대한 분석을 간단히 언급한 후, 다음 단계로 나아가기 위한 날카로운 질문을 하나 던지십시오.
 """
 
+    ANALYZER_PROMPT = """
+당신은 사용자의 답변을 분석하여 논리적 취약점과 핵심 정보를 추출하는 'Logical Analyzer'입니다.
+
+[분석 지침]
+1. 사용자의 답변에서 논리적 비약(Jump in logic)이나 숨겨진 전제(Hidden assumption)를 찾아내십시오.
+2. 현재까지 파악된 사용자의 페르소나(역할)나 문제의 배경 정보를 추출하십시오.
+3. 근본 원인이 이미 파악되었는지, 혹은 추가 질문이 필요한지 판단하십시오.
+
+[출력 형식]
+반드시 아래의 JSON 형식을 지켜서 응답하십시오. 다른 텍스트는 포함하지 마십시오.
+{
+    "logical_error_detected": true/false,
+    "extracted_metadata": {
+        "persona": "추출된 페르소나",
+        "assumptions": ["전제1", "전제2"],
+        "context": "배경 정보"
+    },
+    "root_cause_identified": true/false
+}
+"""
+
+    def analyze_response(self, state: InquiryGraphState) -> InquiryGraphState:
+        """사용자의 마지막 답변을 분석하여 상태를 업데이트합니다.
+        
+        Args:
+            state: 현재 워크플로우 상태
+            
+        Returns:
+            업데이트된 상태
+        """
+        import json
+        
+        messages = [
+            {"role": "system", "content": self.ANALYZER_PROMPT},
+        ]
+        # 최신 대화 이력 추가
+        messages.extend(state["history"])
+        
+        response_text = self.get_response(messages)
+        
+        try:
+            # JSON 응답 파싱 (LLM이 마크다운 코드 블록으로 감쌌을 경우 처리)
+            clean_json = response_text.strip().replace("```json", "").replace("```", "")
+            analysis = json.loads(clean_json)
+            
+            # 상태 업데이트
+            state["logical_error_detected"] = analysis.get("logical_error_detected", False)
+            # 기존 메타데이터와 병합
+            state["extracted_metadata"].update(analysis.get("extracted_metadata", {}))
+            # root_cause_identified는 엣지 로직에서 사용하므로 메타데이터에 임시 저장하거나 
+            # 필요한 경우 상태 구조를 확장할 수 있음. 현재는 metadata에 저장.
+            state["extracted_metadata"]["root_cause_identified"] = analysis.get("root_cause_identified", False)
+            
+        except (json.JSONDecodeError, KeyError, Exception) as e:
+            # 파싱 실패 시 기본값 유지 (로깅 필요)
+            print(f"Error parsing analyzer response: {e}")
+            pass
+            
+        return state
+
     def generate_question(self, chat_history):
         """채팅 기록을 바탕으로 다음 소크라테스식 질문을 생성합니다.
 
