@@ -167,6 +167,26 @@ class InquiryAgent(BaseAgent):
         
         return state
 
+    def should_continue(self, state: InquiryGraphState) -> str:
+        """대화를 계속할지 종료할지 결정하는 엣지 로직입니다.
+        
+        Args:
+            state: 현재 워크플로우 상태
+            
+        Returns:
+            "continue" 또는 "end"
+        """
+        # 1. 근본 원인이 파악되었으면 종료
+        if state["extracted_metadata"].get("root_cause_identified", False):
+            return "end"
+            
+        # 2. 최대 질문 단계(5단계)에 도달했으면 종료
+        if state["step_count"] >= 5:
+            return "end"
+            
+        # 그 외에는 계속 진행
+        return "continue"
+
     def generate_question(self, chat_history):
         """채팅 기록을 바탕으로 다음 소크라테스식 질문을 생성합니다.
 
