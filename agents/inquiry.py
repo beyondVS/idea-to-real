@@ -1,5 +1,6 @@
 from typing import TypedDict, List, Dict, Any, Annotated
 import operator
+import json
 from .base import BaseAgent
 
 class InquiryGraphState(TypedDict):
@@ -58,6 +59,23 @@ class InquiryAgent(BaseAgent):
 }
 """
 
+    EMPATHIZER_PROMPT = """
+당신은 AI의 질문을 검토하여 공감과 전문적인 한국어 톤앤매너를 적용하는 'Empathy Specialist'입니다.
+
+[작업 지침]
+1. 입력받은 질문의 핵심 의도는 유지하십시오.
+2. 사용자의 상황에 공감하는 문장을 추가하여 대화의 부드러움을 높이십시오.
+3. '해요체'나 '하십시오체'를 적절히 혼용하여 전문적이면서도 친절한 한국어 어조를 완성하십시오.
+4. 질문은 한 번에 하나만 포함되어야 합니다.
+
+[입력 정보]
+- 원본 질문: {raw_question}
+- 현재 페르소나/맥락: {metadata}
+
+[출력 형식]
+공감과 질문이 포함된 정제된 한국어 문장만 출력하십시오.
+"""
+
     def analyze_response(self, state: InquiryGraphState) -> InquiryGraphState:
         """사용자의 마지막 답변을 분석하여 상태를 업데이트합니다.
         
@@ -67,8 +85,6 @@ class InquiryAgent(BaseAgent):
         Returns:
             업데이트된 상태
         """
-        import json
-        
         messages = [
             {"role": "system", "content": self.ANALYZER_PROMPT},
         ]
@@ -119,6 +135,35 @@ class InquiryAgent(BaseAgent):
         # 상태 업데이트
         state["history"].append({"role": "assistant", "content": question})
         state["step_count"] += 1
+        
+        return state
+
+    def apply_empathy(self, state: InquiryGraphState) -> InquiryGraphState:
+        """생성된 질문에 공감과 한국어 톤앤매너를 적용합니다.
+        
+        Args:
+            state: 현재 워크플로우 상태
+            
+        Returns:
+            업데이트된 상태 (마지막 assistant 메시지 수정)
+        """
+        if not state["history"] or state["history"][-1]["role"] != "assistant":
+            return state
+            
+        raw_question = state["history"][-1]["content"]
+        
+        prompt = self.EMPATHIZER_PROMPT.format(
+            raw_question=raw_question,
+            metadata=json.dumps(state["extracted_metadata"], ensure_ascii=False)
+        )
+        
+        refined_question = self.get_response([
+            {"role": "system", "content": prompt},
+            {"role": "user", "content": "질문을 정제해 주세요."}
+        ])
+        
+        # 마지막 메시지 교체
+        state["history"][-1]["content"] = refined_question
         
         return state
 
