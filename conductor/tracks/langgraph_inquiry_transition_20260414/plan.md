@@ -1,7 +1,7 @@
 # Implementation Plan: LangGraph Inquiry Engine (plan.md)
 
 ## Phase 1: Environment Setup & State Definition
-- [ ] Task: LangGraph 및 관련 의존성(`langgraph`) 설치 및 환경 설정
+- [x] Task: LangGraph 및 관련 의존성(`langgraph`) 설치 및 환경 설정 [ca1cb30]
 - [ ] Task: Inquiry 워크플로우를 위한 `GraphState` 클래스 정의 (history, step_count, metadata 등)
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Environment Setup & State Definition' (Protocol in workflow.md)
 
