@@ -97,6 +97,31 @@ class InquiryAgent(BaseAgent):
             
         return state
 
+    def generate_next_question(self, state: InquiryGraphState) -> InquiryGraphState:
+        """분석된 상태를 바탕으로 다음 질문을 생성합니다.
+        
+        Args:
+            state: 현재 워크플로우 상태
+            
+        Returns:
+            업데이트된 상태 (history에 질문 추가, step_count 증가)
+        """
+        # 시스템 프롬프트 구성 (분석된 메타데이터 반영 가능)
+        system_prompt = self.SYSTEM_PROMPT
+        if state["extracted_metadata"]:
+            system_prompt += f"\n\n[현재까지 파악된 정보]\n{state['extracted_metadata']}"
+        
+        messages = [{"role": "system", "content": system_prompt}]
+        messages.extend(state["history"])
+        
+        question = self.get_response(messages)
+        
+        # 상태 업데이트
+        state["history"].append({"role": "assistant", "content": question})
+        state["step_count"] += 1
+        
+        return state
+
     def generate_question(self, chat_history):
         """채팅 기록을 바탕으로 다음 소크라테스식 질문을 생성합니다.
 
