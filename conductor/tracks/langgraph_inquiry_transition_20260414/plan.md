@@ -12,7 +12,7 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 2: Node Implementation' (Protocol in workflow.md)
 
 ## Phase 3: Edge Logic & Workflow Construction
-- [ ] Task: 조건부 엣지(Edge) 로직 구현 (근본 원인 식별 및 사용자 종료 조건)
+- [x] Task: 조건부 엣지(Edge) 로직 구현 (근본 원인 식별 및 사용자 종료 조건) [d0e34a7]
 - [ ] Task: 전체 LangGraph 워크플로우 구성 및 컴파일
 - [ ] Task: Conductor - User Manual Verification 'Phase 3: Edge Logic & Workflow Construction' (Protocol in workflow.md)
 
