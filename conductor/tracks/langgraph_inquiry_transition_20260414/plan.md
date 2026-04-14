@@ -7,7 +7,7 @@
 
 ## Phase 2: Node Implementation
 - [x] Task: `Analyzer` 노드 구현 (논리적 비약 분석 및 메타데이터 추출) [3284fc0]
-- [ ] Task: `Questioner` 노드 구현 (5 Whys 및 소크라테스식 질문 생성)
+- [x] Task: `Questioner` 노드 구현 (5 Whys 및 소크라테스식 질문 생성) [da5b62f]
 - [ ] Task: `Empathizer` 노드 구현 (공감 및 한국어 톤앤매너 적용)
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Node Implementation' (Protocol in workflow.md)
 
