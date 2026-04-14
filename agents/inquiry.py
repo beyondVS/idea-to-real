@@ -1,4 +1,20 @@
+from typing import TypedDict, List, Dict, Any, Annotated
+import operator
 from .base import BaseAgent
+
+class InquiryGraphState(TypedDict):
+    """Inquiry 워크플로우의 상태를 정의합니다.
+    
+    Attributes:
+        history: 대화 이력 (기존 메시지에 누적됨)
+        step_count: 현재 5 Whys 단계 (1~5)
+        extracted_metadata: 분석을 통해 추출된 페르소나 및 숨겨진 전제
+        logical_error_detected: 논리적 비약이나 모순 발견 여부
+    """
+    history: Annotated[List[Dict[str, str]], operator.add]
+    step_count: int
+    extracted_metadata: Dict[str, Any]
+    logical_error_detected: bool
 
 class InquiryAgent(BaseAgent):
     """사용자에게 질문을 던져 아이디어를 구체화하는 소크라테스식 질문 엔진입니다.
