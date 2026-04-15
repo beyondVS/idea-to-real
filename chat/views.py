@@ -70,9 +70,19 @@ def send_message(request, session_id):
             # 대화 기록 가져오기
             chat_history = session.messages.all().order_by('timestamp')
 
-            # 2. Inquiry Agent 응답 생성
+            # 2. Inquiry Agent 응답 생성 (LangGraph 워크플로우 실행)
             inquiry_agent = InquiryAgent()
-            ai_inquiry_content = inquiry_agent.generate_question(chat_history)
+            ai_inquiry_content, updated_step, updated_metadata = inquiry_agent.generate_question(
+                chat_history, 
+                current_step=session.step_count, 
+                current_metadata=session.metadata
+            )
+            
+            # 세션 상태 업데이트
+            session.step_count = updated_step
+            session.metadata = updated_metadata
+            session.save()
+
             Message.objects.create(
                 session=session,
                 sender='ai_inquiry',

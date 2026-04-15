@@ -219,20 +219,43 @@ class InquiryAgent(BaseAgent):
         # 그 외에는 계속 진행
         return "continue"
 
-    def generate_question(self, chat_history):
-        """채팅 기록을 바탕으로 다음 소크라테스식 질문을 생성합니다.
+    def generate_question(self, chat_history, current_step=0, current_metadata=None):
+        """LangGraph 워크플로우를 실행하여 다음 질문을 생성합니다.
 
         Args:
-            chat_history: Django 모델의 Message 객체 리스트 또는 딕셔너리 리스트입니다.
+            chat_history: Django 모델의 Message 객체 리스트입니다.
+            current_step: 세션의 현재 질문 단계입니다.
+            current_metadata: 세션의 현재 메타데이터 (JSON)입니다.
 
         Returns:
-            AI가 생성한 질문 문자열입니다.
+            Tuple[str, int, dict]: (생성된 질문, 업데이트된 step_count, 업데이트된 metadata)
         """
-        messages = [{"role": "system", "content": self.SYSTEM_PROMPT}]
+        if current_metadata is None:
+            current_metadata = {}
 
-        # 이전 대화 내용을 OpenAI 메시지 형식으로 변환
+        # 1. Django 메시지를 GraphState history 형식으로 변환
+        history = []
         for msg in chat_history:
+            # ai_inquiry와 ai_critique는 모두 assistant로 간주하거나, 
+            # 5 Whys 흐름을 위해서는 ai_inquiry만 assistant로 간주할 수도 있음.
+            # 여기서는 모든 AI 메시지를 assistant로 간주함.
             role = "user" if msg.sender == "user" else "assistant"
-            messages.append({"role": role, "content": msg.content})
+            history.append({"role": role, "content": msg.content})
 
-        return self.get_response(messages)
+        # 2. 초기 상태 구성
+        initial_state: InquiryGraphState = {
+            "history": history,
+            "step_count": current_step,
+            "extracted_metadata": current_metadata,
+            "logical_error_detected": False
+        }
+
+        # 3. 워크플로우 실행
+        final_state = self.workflow.invoke(initial_state)
+
+        # 4. 마지막 생성된 질문 추출
+        # history의 마지막 메시지가 assistant가 아닐 경우(예: 종료됨)를 처리
+        last_message = final_state["history"][-1]
+        question = last_message["content"] if last_message["role"] == "assistant" else "문제가 충분히 정의되었습니다. 기술서를 확인해 보세요."
+
+        return question, final_state["step_count"], final_state["extracted_metadata"]

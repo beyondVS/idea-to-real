@@ -7,11 +7,15 @@ class Session(models.Model):
     Attributes:
         id: 세션의 고유 식별자 (UUID)입니다.
         title: 세션의 제목입니다.
+        step_count: LangGraph 워크플로우의 현재 질문 단계입니다.
+        metadata: 추출된 페르소나 및 분석 데이터 (JSON)입니다.
         created_at: 세션 생성 일시입니다.
         updated_at: 세션 정보 수정 일시입니다.
     """
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     title = models.CharField(max_length=255, blank=True)
+    step_count = models.PositiveIntegerField(default=0)
+    metadata = models.JSONField(default=dict, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
