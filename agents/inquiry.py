@@ -123,9 +123,9 @@ class InquiryAgent(BaseAgent):
         # 최신 대화 이력 추가
         messages.extend(state["history"])
         
-        response_text = self.get_response(messages)
-        
         try:
+            response_text = self.get_response(messages)
+            
             # JSON 응답 파싱 (LLM이 마크다운 코드 블록으로 감쌌을 경우 처리)
             clean_json = response_text.strip().replace("```json", "").replace("```", "")
             analysis = json.loads(clean_json)
@@ -134,14 +134,13 @@ class InquiryAgent(BaseAgent):
             state["logical_error_detected"] = analysis.get("logical_error_detected", False)
             # 기존 메타데이터와 병합
             state["extracted_metadata"].update(analysis.get("extracted_metadata", {}))
-            # root_cause_identified는 엣지 로직에서 사용하므로 메타데이터에 임시 저장하거나 
-            # 필요한 경우 상태 구조를 확장할 수 있음. 현재는 metadata에 저장.
             state["extracted_metadata"]["root_cause_identified"] = analysis.get("root_cause_identified", False)
             
-        except (json.JSONDecodeError, KeyError, Exception) as e:
-            # 파싱 실패 시 기본값 유지 (로깅 필요)
-            print(f"Error parsing analyzer response: {e}")
-            pass
+        except Exception as e:
+            # API 할당량 초과(429)나 네트워크 에러 발생 시 기본값 유지 및 로깅
+            print(f"Error in analyzer node: {e}")
+            state["logical_error_detected"] = False
+            state["extracted_metadata"]["root_cause_identified"] = False
             
         return state
 
@@ -162,7 +161,12 @@ class InquiryAgent(BaseAgent):
         messages = [{"role": "system", "content": system_prompt}]
         messages.extend(state["history"])
         
-        question = self.get_response(messages)
+        try:
+            question = self.get_response(messages)
+        except Exception as e:
+            print(f"Error in questioner node: {e}")
+            # 폴백 질문 제공
+            question = "방금 하신 말씀에 대해 조금 더 자세히 설명해 주시겠어요? 어떤 배경에서 그런 생각을 하셨는지 궁금합니다."
         
         # 상태 업데이트
         state["history"].append({"role": "assistant", "content": question})
@@ -189,13 +193,17 @@ class InquiryAgent(BaseAgent):
             metadata=json.dumps(state["extracted_metadata"], ensure_ascii=False)
         )
         
-        refined_question = self.get_response([
-            {"role": "system", "content": prompt},
-            {"role": "user", "content": "질문을 정제해 주세요."}
-        ])
-        
-        # 마지막 메시지 교체
-        state["history"][-1]["content"] = refined_question
+        try:
+            refined_question = self.get_response([
+                {"role": "system", "content": prompt},
+                {"role": "user", "content": "질문을 정제해 주세요."}
+            ])
+            # 마지막 메시지 교체
+            state["history"][-1]["content"] = refined_question
+        except Exception as e:
+            print(f"Error in empathizer node: {e}")
+            # 에러 발생 시 원본 질문 유지
+            pass
         
         return state
 

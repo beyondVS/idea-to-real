@@ -16,13 +16,13 @@
 - [x] Task: 전체 LangGraph 워크플로우 구성 및 컴파일 [a280d37]
 - [x] Task: Conductor - User Manual Verification 'Phase 3: Edge Logic & Workflow Construction' (Protocol in workflow.md)
 
-## Phase 4: Django Integration & Legacy Replacement
-- [~] Task: LangGraph 워크플로우를 기존 Django View/Action에 통합
-- [ ] Task: 대화 세션 관리 로직 업데이트 (LangGraph 상태 유지 대응)
-- [ ] Task: 기존 시스템 프롬프트 기반 로직의 완전한 제거 및 검증
-- [ ] Task: Conductor - User Manual Verification 'Phase 4: Django Integration & Legacy Replacement' (Protocol in workflow.md)
+## Phase 4: Django Integration & Legacy Replacement [checkpoint: 79e0906]
+- [x] Task: LangGraph 워크플로우를 기존 Django View/Action에 통합 [db0625e]
+- [x] Task: 대화 세션 관리 로직 업데이트 (LangGraph 상태 유지 대응) [79e0906]
+- [x] Task: 기존 시스템 프롬프트 기반 로직의 완전한 제거 및 검증 [79e0906]
+- [x] Task: Conductor - User Manual Verification 'Phase 4: Django Integration & Legacy Replacement' (Protocol in workflow.md)
 
 ## Phase 5: Final Verification & Refinement
-- [ ] Task: 전체 인콰이어리 흐름에 대한 통합 테스트 및 커버리지 체크 (>80%)
+- [~] Task: 전체 인콰이어리 흐름에 대한 통합 테스트 및 커버리지 체크 (>80%)
 - [ ] Task: 예외 상황(LLM 출력 오류 등) 처리 및 성능 최적화
 - [ ] Task: Conductor - User Manual Verification 'Phase 5: Final Verification & Refinement' (Protocol in workflow.md)
