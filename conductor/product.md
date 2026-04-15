@@ -17,7 +17,7 @@ To provide a structured, logical approach to problem definition using AI, moving
 - **Standardized Specification Generation:** Producing a high-quality, structured document for downstream development or analysis.
 
 ## Core Features
-- **Conversational Inquiry Engine:** An AI agent specialized in asking probing questions using 5 Whys and Socratic methods.
+- **LangGraph-based Inquiry Engine:** A state-machine powered AI agent specialized in asking probing questions using 5 Whys and Socratic methods. It utilizes independent 'Analyzer', 'Questioner', and 'Empathizer' nodes to ensure logical depth and emotional resonance in every turn.
 - **Multi-Agent Reflection & Critique:** Multiple agents that review and validate each other's reasoning and conclusions.
 - **Structured Document Exporter:** Automatically transforming the interaction history into a structured 'Problem Specification'.
 

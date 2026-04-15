@@ -17,3 +17,6 @@
 - **OpenAI:** Supported via `openai` SDK for tasks requiring high general intelligence.
 - **Anthropic:** Supported via `anthropic` SDK for tasks needing sophisticated reasoning and large contexts.
 - **Multi-Agent Packaging:** A custom abstract provider interface ensures consistent integration across different LLM backends.
+
+## AI Workflow & Graph
+- **LangGraph:** Used to implement the Inquiry Engine as a state machine workflow, providing fine-grained control over dialogue flows (Analyzer, Questioner, Empathizer) and enabling complex, looping agentic patterns.
