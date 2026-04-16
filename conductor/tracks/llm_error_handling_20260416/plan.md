@@ -1,18 +1,18 @@
 # Implementation Plan: LLM Error Handling & Retry Logic
 
-## Phase 1: Error Classification and Exception Handling Base
+## Phase 1: Error Classification and Exception Handling Base [checkpoint: d02f967]
 에러를 분류하기 위한 기초 예외 구조를 정의하고, 각 LLM 공급자(Provider)에서 발생하는 에러를 통합된 형식으로 변환하는 기능을 구현합니다.
 
-- [ ] Task: Define custom exception classes for LLM errors
-    - [ ] Write tests for `LLMBaseError`, `LLMTransientError`, `LLMPermanentError`
-    - [ ] Implement exception hierarchy in `agents/base.py` or a new `agents/exceptions.py`
-- [ ] Task: Implement error mapping for Gemini Provider
-    - [ ] Write tests for mapping `google.api_core.exceptions` to custom exceptions
-    - [ ] Implement error mapping logic in `agents/base.py` (Gemini implementation)
-- [ ] Task: Implement error mapping for OpenAI/Anthropic Providers (if applicable)
-    - [ ] Write tests for mapping provider-specific errors
-    - [ ] Implement error mapping logic in respective provider classes
-- [ ] Task: Conductor - User Manual Verification 'Phase 1: Error Classification' (Protocol in workflow.md)
+- [x] Task: Define custom exception classes for LLM errors
+    - [x] Write tests for `LLMBaseError`, `LLMTransientError`, `LLMPermanentError`
+    - [x] Implement exception hierarchy in `agents/base.py` or a new `agents/exceptions.py`
+- [x] Task: Implement error mapping for Gemini Provider
+    - [x] Write tests for mapping `google.api_core.exceptions` to custom exceptions
+    - [x] Implement error mapping logic in `agents/base.py` (Gemini implementation)
+- [x] Task: Implement error mapping for OpenAI/Anthropic Providers (if applicable)
+    - [x] Write tests for mapping provider-specific errors
+    - [x] Implement error mapping logic in respective provider classes
+- [x] Task: Conductor - User Manual Verification 'Phase 1: Error Classification' (Protocol in workflow.md)
 
 ## Phase 2: Exponential Backoff Retry Logic
 분류된 재시도 가능 에러에 대해 지수 백오프 전략을 적용한 재시도 데코레이터 또는 유틸리티를 구현합니다.
