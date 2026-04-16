@@ -25,15 +25,15 @@
     - [x] Apply retry decorator/wrapper to LLM calling logic
 - [x] Task: Conductor - User Manual Verification 'Phase 2: Retry Logic' (Protocol in workflow.md)
 
-## Phase 3: User Notification and UI Integration
+## Phase 3: User Notification and UI Integration [checkpoint: 4942cd5]
 에러 발생 시 사용자에게 적절한 메시지를 전달하고, 프론트엔드에서 이를 표시하는 기능을 강화합니다.
 
-- [ ] Task: Enhance error message generation logic
-    - [ ] Write tests for `get_user_friendly_message(exception)`
-    - [ ] Implement message generation logic based on error types
-- [ ] Task: Integrate error handling into Chat views
-    - [ ] Write integration tests for `chat/views.py` ensuring exceptions are caught and returned as context
-    - [ ] Update views to handle LLM errors gracefully and pass messages to templates
-- [ ] Task: Update UI templates to display specific error messages
-    - [ ] Manually verify error display in `chat/templates/chat/detail.html`
-- [ ] Task: Conductor - User Manual Verification 'Phase 3: User Notification' (Protocol in workflow.md)
+- [x] Task: Enhance error message generation logic
+    - [x] Write tests for `get_user_friendly_message(exception)`
+    - [x] Implement message generation logic based on error types
+- [x] Task: Integrate error handling into Chat views
+    - [x] Write integration tests for `chat/views.py` ensuring exceptions are caught and returned as context
+    - [x] Update views to handle LLM errors gracefully and pass messages to templates
+- [x] Task: Update UI templates to display specific error messages
+    - [x] Manually verify error display in `chat/templates/chat/detail.html`
+- [x] Task: Conductor - User Manual Verification 'Phase 3: User Notification' (Protocol in workflow.md)
