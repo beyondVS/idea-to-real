@@ -5,6 +5,12 @@ from openai import OpenAI
 from google import genai
 from anthropic import Anthropic
 
+import openai
+import anthropic
+
+from google.genai import errors as genai_errors
+from agents.exceptions import LLMTransientError, LLMPermanentError
+
 class BaseLLMProvider(ABC):
     """모든 LLM 프로바이더의 추상 베이스 클래스입니다."""
 
@@ -27,10 +33,37 @@ class BaseLLMProvider(ABC):
         """
         pass
 
+    def _map_error(self, e):
+        """프로바이더 전용 에러를 공통 에러로 매핑합니다."""
+        # Gemini (google-genai)
+        if isinstance(e, genai_errors.APIError):
+            if e.code in [429, 500, 503, 504]:
+                return LLMTransientError(str(e), original_error=e)
+            else:
+                return LLMPermanentError(str(e), original_error=e)
+        
+        # OpenAI
+        if isinstance(e, (openai.RateLimitError, openai.APITimeoutError, openai.InternalServerError)):
+            return LLMTransientError(str(e), original_error=e)
+        if isinstance(e, (openai.AuthenticationError, openai.BadRequestError)):
+            return LLMPermanentError(str(e), original_error=e)
+        if isinstance(e, openai.OpenAIError):
+            return LLMBaseError(str(e), original_error=e)
+
+        # Anthropic
+        if isinstance(e, (anthropic.RateLimitError, anthropic.APITimeoutError, anthropic.InternalServerError)):
+            return LLMTransientError(str(e), original_error=e)
+        if isinstance(e, (anthropic.AuthenticationError, anthropic.BadRequestError)):
+            return LLMPermanentError(str(e), original_error=e)
+        if isinstance(e, anthropic.AnthropicError):
+            return LLMBaseError(str(e), original_error=e)
+
+        return e
+
 class GeminiProvider(BaseLLMProvider):
     """Google Gemini LLM 프로바이더입니다."""
 
-    def __init__(self, api_key=None, model="gemini-2.5-flash-lite"):
+    def __init__(self, api_key=None, model="gemini-3.1-flash-lite-preview"):
         self.api_key = api_key or getattr(settings, 'GEMINI_API_KEY', '')
         self.client = genai.Client(api_key=self.api_key)
         self.model = model
@@ -54,12 +87,15 @@ class GeminiProvider(BaseLLMProvider):
         if kwargs:
             config.update(kwargs)
 
-        response = self.client.models.generate_content(
-            model=self.model,
-            contents=contents,
-            config=config if config else None
-        )
-        return response.text
+        try:
+            response = self.client.models.generate_content(
+                model=self.model,
+                contents=contents,
+                config=config if config else None
+            )
+            return response.text
+        except Exception as e:
+            raise self._map_error(e)
 
     def handle_tool_call(self, tool_call):
         # TODO(callo): Implement tool call handling
@@ -74,12 +110,15 @@ class OpenAIProvider(BaseLLMProvider):
         self.model = model
 
     def generate_response(self, messages, **kwargs):
-        response = self.client.chat.completions.create(
-            model=self.model,
-            messages=messages,
-            **kwargs
-        )
-        return response.choices[0].message.content
+        try:
+            response = self.client.chat.completions.create(
+                model=self.model,
+                messages=messages,
+                **kwargs
+            )
+            return response.choices[0].message.content
+        except Exception as e:
+            raise self._map_error(e)
 
     def handle_tool_call(self, tool_call):
         # TODO(callo): Implement tool call handling
@@ -98,14 +137,17 @@ class AnthropicProvider(BaseLLMProvider):
         system_prompt = next((m['content'] for m in messages if m['role'] == 'system'), "")
         filtered_messages = [m for m in messages if m['role'] != 'system']
         
-        response = self.client.messages.create(
-            model=self.model,
-            system=system_prompt,
-            messages=filtered_messages,
-            max_tokens=kwargs.get('max_tokens', 1024),
-            **{k: v for k, v in kwargs.items() if k != 'max_tokens'}
-        )
-        return response.content[0].text
+        try:
+            response = self.client.messages.create(
+                model=self.model,
+                system=system_prompt,
+                messages=filtered_messages,
+                max_tokens=kwargs.get('max_tokens', 1024),
+                **{k: v for k, v in kwargs.items() if k != 'max_tokens'}
+            )
+            return response.content[0].text
+        except Exception as e:
+            raise self._map_error(e)
 
     def handle_tool_call(self, tool_call):
         # TODO(callo): Implement tool call handling
