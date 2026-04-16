@@ -10,6 +10,7 @@ import anthropic
 
 from google.genai import errors as genai_errors
 from agents.exceptions import LLMTransientError, LLMPermanentError
+from agents.utils import retry_with_backoff
 
 class BaseLLMProvider(ABC):
     """모든 LLM 프로바이더의 추상 베이스 클래스입니다."""
@@ -68,6 +69,7 @@ class GeminiProvider(BaseLLMProvider):
         self.client = genai.Client(api_key=self.api_key)
         self.model = model
 
+    @retry_with_backoff(max_retries=3)
     def generate_response(self, messages, **kwargs):
         # google-genai는 system_instruction과 contents를 분리하여 처리함
         system_instruction = next((m['content'] for m in messages if m['role'] == 'system'), None)
@@ -109,6 +111,7 @@ class OpenAIProvider(BaseLLMProvider):
         self.client = OpenAI(api_key=self.api_key)
         self.model = model
 
+    @retry_with_backoff(max_retries=3)
     def generate_response(self, messages, **kwargs):
         try:
             response = self.client.chat.completions.create(
@@ -132,6 +135,7 @@ class AnthropicProvider(BaseLLMProvider):
         self.client = Anthropic(api_key=self.api_key)
         self.model = model
 
+    @retry_with_backoff(max_retries=3)
     def generate_response(self, messages, **kwargs):
         # Anthropic은 system prompt를 별도 인자로 받음
         system_prompt = next((m['content'] for m in messages if m['role'] == 'system'), "")
