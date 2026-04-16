@@ -18,5 +18,10 @@
 - **Anthropic:** Supported via `anthropic` SDK for tasks needing sophisticated reasoning and large contexts.
 - **Multi-Agent Packaging:** A custom abstract provider interface ensures consistent integration across different LLM backends.
 
+## Resilience & Reliability
+- **Error Classification:** Provider-specific errors are mapped to a unified exception hierarchy (Transient vs. Permanent).
+- **Exponential Backoff Retry:** Automatic retries for transient errors (Rate Limits, Timeouts) using a decorator-based approach.
+- **User-Friendly Error Notification:** Meaningful guidance provided to users when LLM calls fail.
+
 ## AI Workflow & Graph
 - **LangGraph:** Used to implement the Inquiry Engine as a state machine workflow, providing fine-grained control over dialogue flows (Analyzer, Questioner, Empathizer) and enabling complex, looping agentic patterns.
