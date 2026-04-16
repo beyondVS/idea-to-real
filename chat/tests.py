@@ -50,6 +50,7 @@ class ViewTest(TestCase):
         response = self.client.get(reverse('chat:detail', args=[self.session.id]))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Test View Session")
+        self.assertIn('chat_messages', response.context)
 
     def test_message_sending(self):
         """메시지 전송 기능이 정상적으로 작동하는지 확인합니다. (Mock 사용)"""
@@ -57,7 +58,7 @@ class ViewTest(TestCase):
         with patch('agents.inquiry.InquiryAgent.generate_question') as mock_inquiry, \
              patch('agents.critique.CritiqueAgent.generate_critique') as mock_critique:
             
-            mock_inquiry.return_value = "Mock AI inquiry"
+            mock_inquiry.return_value = ("Mock AI inquiry", 1, {})
             mock_critique.return_value = "Mock AI critique"
             
             response = self.client.post(reverse('chat:send_message', args=[self.session.id]), {
@@ -95,7 +96,7 @@ class ViewTest(TestCase):
         with patch('agents.inquiry.InquiryAgent.generate_question') as mock_inquiry, \
              patch('agents.critique.CritiqueAgent.generate_critique') as mock_critique:
             
-            mock_inquiry.return_value = "AI Inquiry Question"
+            mock_inquiry.return_value = ("AI Inquiry Question", 1, {})
             mock_critique.return_value = "AI Logical Critique"
             
             response = self.client.post(reverse('chat:send_message', args=[self.session.id]), {
@@ -110,3 +111,21 @@ class ViewTest(TestCase):
             self.assertEqual(Message.objects.filter(session=self.session, sender='user').count(), 1)
             self.assertEqual(Message.objects.filter(session=self.session, sender='ai_inquiry').count(), 1)
             self.assertEqual(Message.objects.filter(session=self.session, sender='ai_critique').count(), 1)
+
+    def test_send_message_llm_error(self):
+        """LLM 호출 중 에러 발생 시 사용자에게 친화적인 메시지가 전달되는지 확인합니다."""
+        from unittest.mock import patch
+        from agents.exceptions import LLMTransientError
+        from django.contrib.messages import get_messages
+        
+        with patch('agents.inquiry.InquiryAgent.generate_question') as mock_inquiry:
+            mock_inquiry.side_effect = LLMTransientError("Rate limit exceeded")
+            
+            response = self.client.post(reverse('chat:send_message', args=[self.session.id]), {
+                'content': 'I want to build a bridge.'
+            }, follow=True)
+            
+            self.assertEqual(response.status_code, 200)
+            messages = list(get_messages(response.wsgi_request))
+            self.assertTrue(len(messages) > 0)
+            self.assertIn("이용량이 많아", str(messages[0]))

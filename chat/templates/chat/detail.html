@@ -83,8 +83,8 @@
 
 <div class="chat-container card" style="padding: 0;">
   <div class="messages" id="message-container">
-    {% if messages %}
-      {% for message in messages %}
+    {% if chat_messages %}
+      {% for message in chat_messages %}
         <div class="message 
           {% if message.sender == 'user' %}message-user
           {% elif message.sender == 'ai_critique' %}message-critique

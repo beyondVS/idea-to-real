@@ -1,9 +1,11 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import JsonResponse, HttpResponse
+from django.contrib import messages as django_messages
 from .models import Session, Message, ProblemSpecification
 from agents.inquiry import InquiryAgent
 from agents.critique import CritiqueAgent
 from agents.summarizer import SummarizeAgent
+from agents.exceptions import LLMBaseError, get_user_friendly_message
 
 def index(request):
     """채팅 세션 목록을 표시하는 메인 페이지 뷰입니다.
@@ -28,8 +30,8 @@ def detail(request, session_id):
         채팅 내역이 렌더링된 HttpResponse 객체입니다.
     """
     session = get_object_or_404(Session, id=session_id)
-    messages = session.messages.all().order_by('timestamp')
-    return render(request, 'chat/detail.html', {'session': session, 'messages': messages})
+    chat_messages = session.messages.all().order_by('timestamp')
+    return render(request, 'chat/detail.html', {'session': session, 'chat_messages': chat_messages})
 
 def create_session(request):
     """새로운 채팅 세션을 생성하고 상세 페이지로 리다이렉트합니다.
@@ -70,33 +72,41 @@ def send_message(request, session_id):
             # 대화 기록 가져오기
             chat_history = session.messages.all().order_by('timestamp')
 
-            # 2. Inquiry Agent 응답 생성 (LangGraph 워크플로우 실행)
-            inquiry_agent = InquiryAgent()
-            ai_inquiry_content, updated_step, updated_metadata = inquiry_agent.generate_question(
-                chat_history, 
-                current_step=session.step_count, 
-                current_metadata=session.metadata
-            )
-            
-            # 세션 상태 업데이트
-            session.step_count = updated_step
-            session.metadata = updated_metadata
-            session.save()
+            try:
+                # 2. Inquiry Agent 응답 생성 (LangGraph 워크플로우 실행)
+                inquiry_agent = InquiryAgent()
+                ai_inquiry_content, updated_step, updated_metadata = inquiry_agent.generate_question(
+                    chat_history, 
+                    current_step=session.step_count, 
+                    current_metadata=session.metadata
+                )
+                
+                # 세션 상태 업데이트
+                session.step_count = updated_step
+                session.metadata = updated_metadata
+                session.save()
 
-            Message.objects.create(
-                session=session,
-                sender='ai_inquiry',
-                content=ai_inquiry_content
-            )
+                Message.objects.create(
+                    session=session,
+                    sender='ai_inquiry',
+                    content=ai_inquiry_content
+                )
 
-            # 3. Critique Agent 응답 생성
-            critique_agent = CritiqueAgent()
-            ai_critique_content = critique_agent.generate_critique(chat_history)
-            Message.objects.create(
-                session=session,
-                sender='ai_critique',
-                content=ai_critique_content
-            )
+                # 3. Critique Agent 응답 생성
+                critique_agent = CritiqueAgent()
+                ai_critique_content = critique_agent.generate_critique(chat_history)
+                Message.objects.create(
+                    session=session,
+                    sender='ai_critique',
+                    content=ai_critique_content
+                )
+            except LLMBaseError as e:
+                # LLM 관련 에러 발생 시 사용자 친화적인 메시지 추가
+                user_msg = get_user_friendly_message(e)
+                django_messages.error(request, user_msg)
+            except Exception as e:
+                # 기타 알 수 없는 에러 처리
+                django_messages.error(request, f"알 수 없는 에러가 발생했습니다: {str(e)}")
 
     return redirect('chat:detail', session_id=session.id)
 
