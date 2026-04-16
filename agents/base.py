@@ -9,7 +9,7 @@ import openai
 import anthropic
 
 from google.genai import errors as genai_errors
-from agents.exceptions import LLMTransientError, LLMPermanentError
+from agents.exceptions import LLMBaseError, LLMTransientError, LLMPermanentError
 from agents.utils import retry_with_backoff
 
 class BaseLLMProvider(ABC):
