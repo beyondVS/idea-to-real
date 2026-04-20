@@ -15,6 +15,8 @@ from google.genai import errors as genai_errors
 from agents.exceptions import LLMBaseError, LLMTransientError, LLMPermanentError
 from agents.utils import retry_with_backoff
 
+logger = logging.getLogger(__name__)
+
 class BaseLLMProvider(ABC):
     """모든 LLM 프로바이더의 추상 베이스 클래스입니다."""
 
