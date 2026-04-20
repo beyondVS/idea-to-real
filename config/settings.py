@@ -132,3 +132,29 @@ ANTHROPIC_API_KEY = env('ANTHROPIC_API_KEY', default='')
 OLLAMA_BASE_URL = env('OLLAMA_BASE_URL', default='http://localhost:11434')
 OLLAMA_MODEL = env('OLLAMA_MODEL', default='gemma4:e4b')
 OLLAMA_TIMEOUT = env.int('OLLAMA_TIMEOUT', default=60)
+
+# Logging Configuration
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'console': {
+            'level': 'INFO',
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose',
+        },
+    },
+    'loggers': {
+        'agents': {
+            'handlers': ['console'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+    },
+}
