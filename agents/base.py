@@ -64,7 +64,7 @@ class BaseLLMProvider(ABC):
 class GeminiProvider(BaseLLMProvider):
     """Google Gemini LLM 프로바이더입니다."""
 
-    def __init__(self, api_key=None, model="gemini-3.1-flash-lite-preview"):
+    def __init__(self, api_key=None, model="gemma-4-31b-it"):
         self.api_key = api_key or getattr(settings, 'GEMINI_API_KEY', '')
         self.client = genai.Client(api_key=self.api_key)
         self.model = model
@@ -155,6 +155,24 @@ class AnthropicProvider(BaseLLMProvider):
 
     def handle_tool_call(self, tool_call):
         # TODO(callo): Implement tool call handling
+        pass
+
+class OllamaProvider(BaseLLMProvider):
+    """Ollama 로컬 LLM 프로바이더입니다."""
+
+    def __init__(self, model=None, base_url=None, timeout=None):
+        self.model = model or getattr(settings, 'OLLAMA_MODEL', 'gemma4:e4b')
+        self.base_url = base_url or getattr(settings, 'OLLAMA_BASE_URL', 'http://localhost:11434')
+        self.timeout = timeout or getattr(settings, 'OLLAMA_TIMEOUT', 60)
+
+    @retry_with_backoff(max_retries=3)
+    def generate_response(self, messages, **kwargs):
+        """Ollama API를 통해 응답을 생성합니다."""
+        # TODO: Implement API call in next task
+        pass
+
+    def handle_tool_call(self, tool_call):
+        """Ollama는 현재 도구 호출을 기본적으로 지원하지 않을 수 있으므로 패스합니다."""
         pass
 
 class ProviderFactory:

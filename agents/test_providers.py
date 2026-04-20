@@ -1,8 +1,12 @@
 import unittest
 from unittest.mock import MagicMock, patch
-from agents.base import BaseLLMProvider, BaseAgent, GeminiProvider, OpenAIProvider, AnthropicProvider, ProviderFactory
+from agents.base import (
+    BaseLLMProvider, BaseAgent, GeminiProvider, OpenAIProvider, 
+    AnthropicProvider, OllamaProvider, ProviderFactory
+)
 
 class MockProvider(BaseLLMProvider):
+
     """테스트를 위한 모의 LLM 프로바이더 클래스입니다."""
 
     def generate_response(self, messages, **kwargs):
@@ -155,6 +159,16 @@ class TestLLMProviders(unittest.TestCase):
         call_args = mock_create.call_args
         self.assertEqual(call_args.kwargs['system'], "You are a helpful assistant.")
         self.assertEqual(len(call_args.kwargs['messages']), 1)
+
+    def test_ollama_provider_init(self):
+        """OllamaProvider가 올바른 설정으로 초기화되는지 테스트합니다."""
+        with patch('django.conf.settings.OLLAMA_BASE_URL', 'http://localhost:11434'), \
+             patch('django.conf.settings.OLLAMA_MODEL', 'gemma4:e4b'), \
+             patch('django.conf.settings.OLLAMA_TIMEOUT', 60):
+            provider = OllamaProvider()
+            self.assertEqual(provider.base_url, 'http://localhost:11434')
+            self.assertEqual(provider.model, 'gemma4:e4b')
+            self.assertEqual(provider.timeout, 60)
 
 if __name__ == '__main__':
     unittest.main()
