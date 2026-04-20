@@ -13,10 +13,10 @@
     - [x] **Red Phase:** `agents/test_providers.py`에 OllamaProvider 초기화 및 설정 로딩 테스트 작성 (실패 확인)
     - [x] **Green Phase:** `agents/base.py` 또는 제공자 정의 파일에 `OllamaProvider` 클래스 뼈대 구현 (테스트 통과)
     - [x] **Refactor:** 코드 정리 및 테스트 커버리지 확인
-- [ ] Task: Implement Chat Completion for Ollama
-    - [ ] **Red Phase:** Ollama API 호출 및 응답 파싱에 대한 단위 테스트 작성 (성공/실패 케이스 포함)
-    - [ ] **Green Phase:** `OllamaProvider.generate()` 메서드 구현 및 실제 API 연동
-    - [ ] **Refactor:** 오류 처리 및 예외 계층 구조(Unified Exception Hierarchy) 반영
+- [x] Task: Implement Chat Completion for Ollama (4511918)
+    - [x] **Red Phase:** Ollama API 호출 및 응답 파싱에 대한 단위 테스트 작성 (성공/실패 케이스 포함)
+    - [x] **Green Phase:** `OllamaProvider.generate()` 메서드 구현 및 실제 API 연동
+    - [x] **Refactor:** 오류 처리 및 예외 계층 구조(Unified Exception Hierarchy) 반영
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: OllamaProvider Implementation (TDD)' (Protocol in workflow.md)
 
 ## Phase 3: System Integration and Verification
