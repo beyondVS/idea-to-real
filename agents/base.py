@@ -210,6 +210,8 @@ class ProviderFactory:
             return OpenAIProvider()
         elif model_type == "anthropic":
             return AnthropicProvider()
+        elif model_type == "ollama":
+            return OllamaProvider()
         else:
             return GeminiProvider()
 

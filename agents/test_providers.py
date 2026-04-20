@@ -107,6 +107,10 @@ class TestLLMProviders(unittest.TestCase):
             provider = factory.get_provider("CritiqueAgent")
             self.assertIsInstance(provider, AnthropicProvider)
 
+        with patch.dict('os.environ', {'AGENT_INQUIRYAGENT_MODEL': 'ollama'}):
+            provider = factory.get_provider("InquiryAgent")
+            self.assertIsInstance(provider, OllamaProvider)
+
     def test_base_agent_auto_provider(self):
         """BaseAgent가 클래스 이름을 기반으로 프로바이더를 자동으로 선택하는지 테스트합니다."""
         # By default, BaseAgent should use factory based on its class name
