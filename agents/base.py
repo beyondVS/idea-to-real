@@ -74,7 +74,7 @@ class BaseLLMProvider(ABC):
 class GeminiProvider(BaseLLMProvider):
     """Google Gemini LLM 프로바이더입니다."""
 
-    def __init__(self, api_key=None, model="gemma-4-31b-it"):
+    def __init__(self, api_key=None, model="gemini-2.5-flash-lite"):
         self.api_key = api_key or getattr(settings, 'GEMINI_API_KEY', '')
         self.client = genai.Client(api_key=self.api_key)
         self.model = model
