@@ -21,8 +21,8 @@
 
 ## Phase 3: System Integration and Verification
 
-- [ ] Task: Register OllamaProvider in Provider Factory
-    - [ ] 시스템 전역에서 Ollama를 프로바이더로 선택할 수 있도록 팩토리 로직 업데이트
+- [x] Task: Register OllamaProvider in Provider Factory (ae823ac)
+    - [x] 시스템 전역에서 Ollama를 프로바이더로 선택할 수 있도록 팩토리 로직 업데이트
 - [ ] Task: Verify Full Workflow with Ollama
     - [ ] `tests/test_full_workflow.py`를 실행하여 Ollama 기반으로 전체 인쿼리 엔진이 작동하는지 확인
     - [ ] Ollama 미실행 시 "Friendly Notification" 에러 처리가 의도대로 작동하는지 검증
