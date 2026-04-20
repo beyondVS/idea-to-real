@@ -43,6 +43,7 @@ class TestLLMProviders(unittest.TestCase):
     def test_base_agent_uses_provider(self):
         """BaseAgent가 주입된 프로바이더를 사용하여 응답을 생성하는지 테스트합니다."""
         mock_provider = MagicMock(spec=BaseLLMProvider)
+        mock_provider.model = "test-model"
         mock_provider.generate_response.return_value = "Agent Response"
         
         agent = BaseAgent(provider=mock_provider)
@@ -93,10 +94,11 @@ class TestLLMProviders(unittest.TestCase):
 
     def test_provider_factory(self):
         """ProviderFactory가 설정에 따라 올바른 프로바이더를 생성하는지 테스트합니다."""
-        # Default case
-        factory = ProviderFactory()
-        provider = factory.get_provider("InquiryAgent")
-        self.assertIsInstance(provider, GeminiProvider)
+        # Default case - Ensure no environment variable interference
+        with patch.dict('os.environ', {'AGENT_INQUIRYAGENT_MODEL': 'gemini'}):
+            factory = ProviderFactory()
+            provider = factory.get_provider("InquiryAgent")
+            self.assertIsInstance(provider, GeminiProvider)
 
         # Environment override case
         with patch.dict('os.environ', {'AGENT_INQUIRYAGENT_MODEL': 'openai'}):
