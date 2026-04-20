@@ -1,0 +1,29 @@
+# Implementation Plan: Add Ollama Provider for Local Development
+
+## Phase 1: Environment Setup and Core Configuration
+
+- [ ] Task: Update environment configuration for Ollama
+    - [ ] `OLLAMA_BASE_URL`, `OLLAMA_MODEL`, `OLLAMA_TIMEOUT` 등 필요 변수를 `.env.example`에 추가
+    - [ ] Django `settings.py`에서 Ollama 관련 설정을 로드하도록 수정
+- [ ] Task: Conductor - User Manual Verification 'Phase 1: Environment Setup and Core Configuration' (Protocol in workflow.md)
+
+## Phase 2: OllamaProvider Implementation (TDD)
+
+- [ ] Task: Define OllamaProvider Foundation
+    - [ ] **Red Phase:** `agents/test_providers.py`에 OllamaProvider 초기화 및 설정 로딩 테스트 작성 (실패 확인)
+    - [ ] **Green Phase:** `agents/base.py` 또는 제공자 정의 파일에 `OllamaProvider` 클래스 뼈대 구현 (테스트 통과)
+    - [ ] **Refactor:** 코드 정리 및 테스트 커버리지 확인
+- [ ] Task: Implement Chat Completion for Ollama
+    - [ ] **Red Phase:** Ollama API 호출 및 응답 파싱에 대한 단위 테스트 작성 (성공/실패 케이스 포함)
+    - [ ] **Green Phase:** `OllamaProvider.generate()` 메서드 구현 및 실제 API 연동
+    - [ ] **Refactor:** 오류 처리 및 예외 계층 구조(Unified Exception Hierarchy) 반영
+- [ ] Task: Conductor - User Manual Verification 'Phase 2: OllamaProvider Implementation (TDD)' (Protocol in workflow.md)
+
+## Phase 3: System Integration and Verification
+
+- [ ] Task: Register OllamaProvider in Provider Factory
+    - [ ] 시스템 전역에서 Ollama를 프로바이더로 선택할 수 있도록 팩토리 로직 업데이트
+- [ ] Task: Verify Full Workflow with Ollama
+    - [ ] `tests/test_full_workflow.py`를 실행하여 Ollama 기반으로 전체 인쿼리 엔진이 작동하는지 확인
+    - [ ] Ollama 미실행 시 "Friendly Notification" 에러 처리가 의도대로 작동하는지 검증
+- [ ] Task: Conductor - User Manual Verification 'Phase 3: System Integration and Final Verification' (Protocol in workflow.md)
