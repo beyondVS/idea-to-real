@@ -16,3 +16,10 @@ class SettingsTest(TestCase):
         """SECRET_KEY가 설정되어 있는지 확인합니다."""
         self.assertIsNotNone(settings.SECRET_KEY)
         self.assertNotEqual(settings.SECRET_KEY, '')
+
+    def test_ollama_settings_loaded(self):
+        """Ollama 관련 설정이 올바르게 로드되었는지 확인합니다."""
+        # 기본값 또는 .env에 설정된 값이 존재해야 함
+        self.assertIsNotNone(settings.OLLAMA_BASE_URL)
+        self.assertIsNotNone(settings.OLLAMA_MODEL)
+        self.assertIsInstance(settings.OLLAMA_TIMEOUT, int)
