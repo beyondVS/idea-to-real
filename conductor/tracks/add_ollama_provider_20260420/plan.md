@@ -1,11 +1,11 @@
 # Implementation Plan: Add Ollama Provider for Local Development
 
-## Phase 1: Environment Setup and Core Configuration
+## Phase 1: Environment Setup and Core Configuration [checkpoint: b2a4248]
 
 - [x] Task: Update environment configuration for Ollama (25c4786)
     - [x] `OLLAMA_BASE_URL`, `OLLAMA_MODEL`, `OLLAMA_TIMEOUT` 등 필요 변수를 `.env.example`에 추가
     - [x] Django `settings.py`에서 Ollama 관련 설정을 로드하도록 수정
-- [ ] Task: Conductor - User Manual Verification 'Phase 1: Environment Setup and Core Configuration' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 1: Environment Setup and Core Configuration' (Protocol in workflow.md) (b2a4248)
 
 ## Phase 2: OllamaProvider Implementation (TDD)
 
