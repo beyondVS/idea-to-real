@@ -1,4 +1,5 @@
 import os
+import logging
 from abc import ABC, abstractmethod
 from django.conf import settings
 from openai import OpenAI
@@ -244,6 +245,7 @@ class BaseAgent:
         Returns:
             에이전트가 생성한 응답 텍스트입니다.
         """
+        logger.info(f"Agent '{self.__class__.__name__}' using provider '{self.provider.__class__.__name__}' with model '{self.provider.model}'")
         return self.provider.generate_response(messages, **kwargs)
 
     def handle_tool_call(self, tool_call):
