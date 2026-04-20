@@ -2,9 +2,9 @@
 
 ## Phase 1: Environment Setup and Core Configuration
 
-- [ ] Task: Update environment configuration for Ollama
-    - [ ] `OLLAMA_BASE_URL`, `OLLAMA_MODEL`, `OLLAMA_TIMEOUT` 등 필요 변수를 `.env.example`에 추가
-    - [ ] Django `settings.py`에서 Ollama 관련 설정을 로드하도록 수정
+- [x] Task: Update environment configuration for Ollama (25c4786)
+    - [x] `OLLAMA_BASE_URL`, `OLLAMA_MODEL`, `OLLAMA_TIMEOUT` 등 필요 변수를 `.env.example`에 추가
+    - [x] Django `settings.py`에서 Ollama 관련 설정을 로드하도록 수정
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Environment Setup and Core Configuration' (Protocol in workflow.md)
 
 ## Phase 2: OllamaProvider Implementation (TDD)
