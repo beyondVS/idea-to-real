@@ -170,5 +170,25 @@ class TestLLMProviders(unittest.TestCase):
             self.assertEqual(provider.model, 'gemma4:e4b')
             self.assertEqual(provider.timeout, 60)
 
+    @patch('ollama.Client.chat')
+    def test_ollama_generate_response(self, mock_chat):
+        """OllamaProvider가 Ollama API를 호출하여 응답을 반환하는지 테스트합니다."""
+        mock_chat.return_value = {
+            'message': {
+                'content': 'Ollama Response'
+            }
+        }
+        
+        provider = OllamaProvider(model="gemma4:e4b", base_url="http://localhost:11434")
+        messages = [{"role": "user", "content": "Hello"}]
+        response = provider.generate_response(messages)
+        
+        self.assertEqual(response, "Ollama Response")
+        mock_chat.assert_called_once_with(
+            model="gemma4:e4b",
+            messages=messages,
+            options={}
+        )
+
 if __name__ == '__main__':
     unittest.main()

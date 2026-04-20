@@ -7,6 +7,8 @@ from anthropic import Anthropic
 
 import openai
 import anthropic
+import ollama
+import requests
 
 from google.genai import errors as genai_errors
 from agents.exceptions import LLMBaseError, LLMTransientError, LLMPermanentError
@@ -58,6 +60,14 @@ class BaseLLMProvider(ABC):
             return LLMPermanentError(str(e), original_error=e)
         if isinstance(e, anthropic.AnthropicError):
             return LLMBaseError(str(e), original_error=e)
+
+        # Ollama
+        if isinstance(e, requests.exceptions.RequestException):
+            return LLMTransientError(str(e), original_error=e)
+        if hasattr(ollama, 'ResponseError') and isinstance(e, ollama.ResponseError):
+            if e.status_code in [429, 500, 503, 504]:
+                return LLMTransientError(str(e), original_error=e)
+            return LLMPermanentError(str(e), original_error=e)
 
         return e
 
@@ -164,12 +174,20 @@ class OllamaProvider(BaseLLMProvider):
         self.model = model or getattr(settings, 'OLLAMA_MODEL', 'gemma4:e4b')
         self.base_url = base_url or getattr(settings, 'OLLAMA_BASE_URL', 'http://localhost:11434')
         self.timeout = timeout or getattr(settings, 'OLLAMA_TIMEOUT', 60)
+        self.client = ollama.Client(host=self.base_url)
 
     @retry_with_backoff(max_retries=3)
     def generate_response(self, messages, **kwargs):
         """Ollama API를 통해 응답을 생성합니다."""
-        # TODO: Implement API call in next task
-        pass
+        try:
+            response = self.client.chat(
+                model=self.model,
+                messages=messages,
+                options=kwargs
+            )
+            return response['message']['content']
+        except Exception as e:
+            raise self._map_error(e)
 
     def handle_tool_call(self, tool_call):
         """Ollama는 현재 도구 호출을 기본적으로 지원하지 않을 수 있으므로 패스합니다."""
