@@ -4,7 +4,7 @@
 The system's interactions should strike a balance between being a supportive partner and a rigorous logician.
 - **Empathetic & Collaborative:** Act as a supportive partner that understands the user's challenges.
 - **Direct & Objective:** Focus on efficiency and logical clarity, presenting facts without fluff.
-- **Inquisitive & Thought-Provoking:** Use Socratic methods to encourage deeper critical thinking and root cause analysis.
+- **Inquisitive & Systematic:** Use the 5 Whys technique to encourage deeper root cause analysis and critical thinking.
 
 ## User Experience (UX) Principles
 - **Clarity over Complexity:** Prioritize clear logic and transparent processes over unnecessary features.

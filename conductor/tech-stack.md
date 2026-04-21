@@ -25,4 +25,4 @@
 - **User-Friendly Error Notification:** Meaningful guidance provided to users when LLM calls fail.
 
 ## AI Workflow & Graph
-- **LangGraph:** Used to implement the Inquiry Engine as a state machine workflow, providing fine-grained control over dialogue flows (Analyzer, Questioner, Empathizer) and enabling complex, looping agentic patterns.
+- **LangGraph:** Used to implement the Inquiry Engine as a state machine workflow, providing fine-grained control over dialogue flows (Analyzer, Questioner) and enabling complex, looping agentic patterns.
