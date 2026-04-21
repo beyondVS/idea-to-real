@@ -1,8 +1,13 @@
 import unittest
+from unittest.mock import patch, MagicMock
 from agents.inquiry import InquiryAgent, InquiryGraphState
 
 class TestEdgeLogic(unittest.TestCase):
-    def setUp(self):
+    @patch('agents.base.ProviderFactory.get_provider')
+    def setUp(self, mock_get_provider):
+        # Mock provider to avoid Django settings error
+        mock_get_provider.return_value = MagicMock()
+        from agents.inquiry import InquiryAgent
         self.agent = InquiryAgent()
 
     def test_should_continue_edge_logic(self):
@@ -11,8 +16,7 @@ class TestEdgeLogic(unittest.TestCase):
         state_continue: InquiryGraphState = {
             "history": [],
             "step_count": 2,
-            "extracted_metadata": {"root_cause_identified": False},
-            "logical_error_detected": False
+            "extracted_metadata": {"root_cause_identified": False}
         }
         self.assertEqual(self.agent.should_continue(state_continue), "continue")
 
@@ -20,8 +24,7 @@ class TestEdgeLogic(unittest.TestCase):
         state_end_cause: InquiryGraphState = {
             "history": [],
             "step_count": 2,
-            "extracted_metadata": {"root_cause_identified": True},
-            "logical_error_detected": False
+            "extracted_metadata": {"root_cause_identified": True}
         }
         self.assertEqual(self.agent.should_continue(state_end_cause), "end")
 
@@ -29,8 +32,7 @@ class TestEdgeLogic(unittest.TestCase):
         state_end_steps: InquiryGraphState = {
             "history": [],
             "step_count": 5,
-            "extracted_metadata": {"root_cause_identified": False},
-            "logical_error_detected": False
+            "extracted_metadata": {"root_cause_identified": False}
         }
         self.assertEqual(self.agent.should_continue(state_end_steps), "end")
 

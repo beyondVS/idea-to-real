@@ -16,18 +16,16 @@ class TestFullWorkflow(unittest.TestCase):
     @patch('agents.base.BaseAgent.get_response')
     def test_workflow_execution_step(self, mock_get_response):
         """Test a single execution step of the workflow."""
-        # side_effect: analyzer (JSON), questioner (Question), empathizer (Refined Question)
+        # side_effect: analyzer (JSON), questioner (Question)
         mock_get_response.side_effect = [
-            '{"logical_error_detected": false, "extracted_metadata": {"goal": "business"}, "root_cause_identified": false}',
-            "What kind of business are you planning?",
+            '{"extracted_metadata": {"goal": "business"}, "root_cause_identified": false}',
             "새로운 사업을 구상 중이시군요! 구체적으로 어떤 종류의 사업을 계획하고 계신가요?"
         ]
 
         initial_state: InquiryGraphState = {
             "history": [{"role": "user", "content": "I want to start a business."}],
             "step_count": 0,
-            "extracted_metadata": {},
-            "logical_error_detected": False
+            "extracted_metadata": {}
         }
         
         # Run the workflow once

@@ -9,13 +9,11 @@ class TestInquiryGraphState(unittest.TestCase):
         state: InquiryGraphState = {
             "history": [],
             "step_count": 0,
-            "extracted_metadata": {},
-            "logical_error_detected": False
+            "extracted_metadata": {}
         }
         self.assertEqual(state["step_count"], 0)
         self.assertIsInstance(state["history"], list)
         self.assertIsInstance(state["extracted_metadata"], dict)
-        self.assertFalse(state["logical_error_detected"])
 
 if __name__ == "__main__":
     unittest.main()

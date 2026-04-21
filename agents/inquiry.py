@@ -11,12 +11,10 @@ class InquiryGraphState(TypedDict):
         history: 대화 이력 (기존 메시지에 누적됨)
         step_count: 현재 5 Whys 단계 (1~5)
         extracted_metadata: 분석을 통해 추출된 페르소나 및 숨겨진 전제
-        logical_error_detected: 논리적 비약이나 모순 발견 여부
     """
     history: Annotated[List[Dict[str, str]], operator.add]
     step_count: int
     extracted_metadata: Dict[str, Any]
-    logical_error_detected: bool
 
 class InquiryAgent(BaseAgent):
     """사용자에게 질문을 던져 아이디어를 구체화하는 질문 엔진입니다.
@@ -35,7 +33,6 @@ class InquiryAgent(BaseAgent):
         # 노드 등록
         builder.add_node("analyzer", self.analyze_response)
         builder.add_node("questioner", self.generate_next_question)
-        builder.add_node("empathizer", self.apply_empathy)
         
         # 엣지 연결
         builder.add_edge(START, "analyzer")
@@ -50,8 +47,7 @@ class InquiryAgent(BaseAgent):
             }
         )
         
-        builder.add_edge("questioner", "empathizer")
-        builder.add_edge("empathizer", END)
+        builder.add_edge("questioner", END)
         
         return builder.compile()
 
@@ -62,8 +58,8 @@ class InquiryAgent(BaseAgent):
 [작동 원리]
 1. 5 Whys 기법을 활용하여 문제의 근본 원인(Root Cause)을 파악하십시오.
 2. 복잡한 이론보다는 사용자의 답변에서 가장 핵심적인 원인을 파고드는 질문을 던지십시오.
-3. 한 번에 하나씩만 질문하십시오. 간결하고 명확한 질문이 중요합니다.
-4. 사용자의 답변에 공감한 뒤, 다음 단계의 원인을 묻는 방식으로 진행하십시오.
+3. 사용자의 상황에 짧게 공감하는 문장을 추가하여 대화를 부드럽게 이어가십시오.
+4. 한 번에 하나씩만 질문하십시오. 간결하고 명확한 질문이 중요합니다.
 5. 친절하고 전문적인 한국어 말투를 사용하십시오.
 
 [출력 형식]
@@ -81,7 +77,6 @@ class InquiryAgent(BaseAgent):
 [출력 형식]
 반드시 아래의 JSON 형식을 지켜서 응답하십시오. 다른 텍스트는 포함하지 마십시오.
 {
-    "logical_error_detected": true/false,
     "extracted_metadata": {
         "persona": "추출된 페르소나",
         "assumptions": ["전제1", "전제2"],
@@ -89,23 +84,6 @@ class InquiryAgent(BaseAgent):
     },
     "root_cause_identified": true/false
 }
-"""
-
-    EMPATHIZER_PROMPT = """
-당신은 AI의 질문을 검토하여 공감과 전문적인 한국어 톤앤매너를 적용하는 'Empathy Specialist'입니다.
-
-[작업 지침]
-1. 입력받은 질문의 핵심 의도는 유지하십시오.
-2. 사용자의 상황에 공감하는 문장을 추가하여 대화의 부드러움을 높이십시오.
-3. '해요체'나 '하십시오체'를 적절히 혼용하여 전문적이면서도 친절한 한국어 어조를 완성하십시오.
-4. 질문은 한 번에 하나만 포함되어야 합니다.
-
-[입력 정보]
-- 원본 질문: {raw_question}
-- 현재 페르소나/맥락: {metadata}
-
-[출력 형식]
-공감과 질문이 포함된 정제된 한국어 문장만 출력하십시오.
 """
 
     def analyze_response(self, state: InquiryGraphState) -> InquiryGraphState:
@@ -130,8 +108,6 @@ class InquiryAgent(BaseAgent):
             clean_json = response_text.strip().replace("```json", "").replace("```", "")
             analysis = json.loads(clean_json)
             
-            # 상태 업데이트
-            state["logical_error_detected"] = analysis.get("logical_error_detected", False)
             # 기존 메타데이터와 병합
             state["extracted_metadata"].update(analysis.get("extracted_metadata", {}))
             state["extracted_metadata"]["root_cause_identified"] = analysis.get("root_cause_identified", False)
@@ -139,7 +115,6 @@ class InquiryAgent(BaseAgent):
         except Exception as e:
             # API 할당량 초과(429)나 네트워크 에러 발생 시 기본값 유지 및 로깅
             print(f"Error in analyzer node: {e}")
-            state["logical_error_detected"] = False
             state["extracted_metadata"]["root_cause_identified"] = False
             
         return state
@@ -171,39 +146,6 @@ class InquiryAgent(BaseAgent):
         # 상태 업데이트
         state["history"].append({"role": "assistant", "content": question})
         state["step_count"] += 1
-        
-        return state
-
-    def apply_empathy(self, state: InquiryGraphState) -> InquiryGraphState:
-        """생성된 질문에 공감과 한국어 톤앤매너를 적용합니다.
-        
-        Args:
-            state: 현재 워크플로우 상태
-            
-        Returns:
-            업데이트된 상태 (마지막 assistant 메시지 수정)
-        """
-        if not state["history"] or state["history"][-1]["role"] != "assistant":
-            return state
-            
-        raw_question = state["history"][-1]["content"]
-        
-        prompt = self.EMPATHIZER_PROMPT.format(
-            raw_question=raw_question,
-            metadata=json.dumps(state["extracted_metadata"], ensure_ascii=False)
-        )
-        
-        try:
-            refined_question = self.get_response([
-                {"role": "system", "content": prompt},
-                {"role": "user", "content": "질문을 정제해 주세요."}
-            ])
-            # 마지막 메시지 교체
-            state["history"][-1]["content"] = refined_question
-        except Exception as e:
-            print(f"Error in empathizer node: {e}")
-            # 에러 발생 시 원본 질문 유지
-            pass
         
         return state
 
@@ -244,9 +186,7 @@ class InquiryAgent(BaseAgent):
         # 1. Django 메시지를 GraphState history 형식으로 변환
         history = []
         for msg in chat_history:
-            # ai_inquiry와 ai_critique는 모두 assistant로 간주하거나, 
-            # 5 Whys 흐름을 위해서는 ai_inquiry만 assistant로 간주할 수도 있음.
-            # 여기서는 모든 AI 메시지를 assistant로 간주함.
+            # ai_inquiry만 assistant로 간주함 (ai_critique는 제거됨)
             role = "user" if msg.sender == "user" else "assistant"
             history.append({"role": role, "content": msg.content})
 
@@ -254,8 +194,7 @@ class InquiryAgent(BaseAgent):
         initial_state: InquiryGraphState = {
             "history": history,
             "step_count": current_step,
-            "extracted_metadata": current_metadata,
-            "logical_error_detected": False
+            "extracted_metadata": current_metadata
         }
 
         # 3. 워크플로우 실행

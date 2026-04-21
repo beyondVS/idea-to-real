@@ -21,8 +21,7 @@ class TestQuestionerNode(unittest.TestCase):
         initial_state: InquiryGraphState = {
             "history": [{"role": "user", "content": "I want to build a house."}],
             "step_count": 0,
-            "extracted_metadata": {"persona": "Home builder"},
-            "logical_error_detected": False
+            "extracted_metadata": {"persona": "Home builder"}
         }
         
         new_state = self.agent.generate_next_question(initial_state)

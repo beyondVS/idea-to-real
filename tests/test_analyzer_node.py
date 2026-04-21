@@ -9,11 +9,10 @@ class TestAnalyzerNode(unittest.TestCase):
 
     @patch('agents.base.BaseAgent.get_response')
     def test_analyzer_updates_state(self, mock_get_response):
-        """Test that the analyzer node updates metadata and logical error flag."""
+        """Test that the analyzer node updates metadata and root cause identification."""
         # Mocking the JSON response from LLM
         mock_get_response.return_value = """
         {
-            "logical_error_detected": true,
             "extracted_metadata": {
                 "persona": "Home builder",
                 "assumptions": ["Needs a lot of money"],
@@ -26,13 +25,11 @@ class TestAnalyzerNode(unittest.TestCase):
         initial_state: InquiryGraphState = {
             "history": [{"role": "user", "content": "I want to build a house."}],
             "step_count": 0,
-            "extracted_metadata": {},
-            "logical_error_detected": False
+            "extracted_metadata": {}
         }
         
         new_state = self.agent.analyze_response(initial_state)
         
-        self.assertTrue(new_state["logical_error_detected"])
         self.assertEqual(new_state["extracted_metadata"]["persona"], "Home builder")
         self.assertIn("assumptions", new_state["extracted_metadata"])
         self.assertIsInstance(new_state["extracted_metadata"], dict)
