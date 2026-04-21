@@ -3,7 +3,6 @@ from django.http import JsonResponse, HttpResponse
 from django.contrib import messages as django_messages
 from .models import Session, Message, ProblemSpecification
 from agents.inquiry import InquiryAgent
-from agents.critique import CritiqueAgent
 from agents.summarizer import SummarizeAgent
 from agents.exceptions import LLMBaseError, get_user_friendly_message
 
@@ -90,15 +89,6 @@ def send_message(request, session_id):
                     session=session,
                     sender='ai_inquiry',
                     content=ai_inquiry_content
-                )
-
-                # 3. Critique Agent 응답 생성
-                critique_agent = CritiqueAgent()
-                ai_critique_content = critique_agent.generate_critique(chat_history)
-                Message.objects.create(
-                    session=session,
-                    sender='ai_critique',
-                    content=ai_critique_content
                 )
             except LLMBaseError as e:
                 # LLM 관련 에러 발생 시 사용자 친화적인 메시지 추가

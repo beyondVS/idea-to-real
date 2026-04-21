@@ -55,11 +55,9 @@ class ViewTest(TestCase):
     def test_message_sending(self):
         """메시지 전송 기능이 정상적으로 작동하는지 확인합니다. (Mock 사용)"""
         from unittest.mock import patch
-        with patch('agents.inquiry.InquiryAgent.generate_question') as mock_inquiry, \
-             patch('agents.critique.CritiqueAgent.generate_critique') as mock_critique:
+        with patch('agents.inquiry.InquiryAgent.generate_question') as mock_inquiry:
             
             mock_inquiry.return_value = ("Mock AI inquiry", 1, {})
-            mock_critique.return_value = "Mock AI critique"
             
             response = self.client.post(reverse('chat:send_message', args=[self.session.id]), {
                 'content': 'New user message'
@@ -67,7 +65,6 @@ class ViewTest(TestCase):
             self.assertEqual(response.status_code, 302)  # 성공 후 리다이렉트
             self.assertEqual(Message.objects.filter(session=self.session, sender='user').count(), 1)
             self.assertEqual(Message.objects.filter(session=self.session, sender='ai_inquiry').count(), 1)
-            self.assertEqual(Message.objects.filter(session=self.session, sender='ai_critique').count(), 1)
 
     def test_export_json(self):
         """JSON 포맷으로 명세서를 성공적으로 반환하는지 확인합니다."""
@@ -88,29 +85,6 @@ class ViewTest(TestCase):
             response = self.client.get(reverse('chat:export_markdown', args=[self.session.id]))
             self.assertEqual(response.status_code, 200)
             self.assertEqual(response['Content-Type'], 'text/markdown; charset=utf-8')
-        
-    def test_multi_agent_integration(self):
-        """사용자 메시지 전송 후 InquiryAgent와 CritiqueAgent가 모두 호출되는지 확인합니다."""
-        from unittest.mock import patch
-        
-        with patch('agents.inquiry.InquiryAgent.generate_question') as mock_inquiry, \
-             patch('agents.critique.CritiqueAgent.generate_critique') as mock_critique:
-            
-            mock_inquiry.return_value = ("AI Inquiry Question", 1, {})
-            mock_critique.return_value = "AI Logical Critique"
-            
-            response = self.client.post(reverse('chat:send_message', args=[self.session.id]), {
-                'content': 'I want to build a bridge.'
-            })
-            
-            # 두 에이전트가 모두 호출되었는지 확인
-            mock_inquiry.assert_called_once()
-            mock_critique.assert_called_once()
-            
-            # 메시지 저장 확인
-            self.assertEqual(Message.objects.filter(session=self.session, sender='user').count(), 1)
-            self.assertEqual(Message.objects.filter(session=self.session, sender='ai_inquiry').count(), 1)
-            self.assertEqual(Message.objects.filter(session=self.session, sender='ai_critique').count(), 1)
 
     def test_send_message_llm_error(self):
         """LLM 호출 중 에러 발생 시 사용자에게 친화적인 메시지가 전달되는지 확인합니다."""

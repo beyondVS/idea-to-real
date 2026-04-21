@@ -34,7 +34,6 @@ class Message(models.Model):
     SENDER_CHOICES = (
         ('user', 'User'),
         ('ai_inquiry', 'AI Inquiry'),
-        ('ai_critique', 'AI Critique'),
     )
     session = models.ForeignKey(Session, related_name='messages', on_delete=models.CASCADE)
     sender = models.CharField(max_length=20, choices=SENDER_CHOICES)

@@ -44,15 +44,6 @@
     border-bottom-left-radius: 0;
   }
 
-  .message-critique {
-    align-self: flex-start;
-    background-color: #ffeaa7; /* 비판 에이전트용 노란색 계열 배경 */
-    color: #d35400;
-    border-bottom-left-radius: 0;
-    font-size: 0.9rem;
-    border: 1px dashed #fab1a0;
-  }
-
   .input-area {
     padding: 1rem;
     background: #f1f1f1;
@@ -87,9 +78,7 @@
       {% for message in chat_messages %}
         <div class="message 
           {% if message.sender == 'user' %}message-user
-          {% elif message.sender == 'ai_critique' %}message-critique
           {% else %}message-ai{% endif %}">
-          {% if message.sender == 'ai_critique' %}<strong>[Logical Critique]</strong><br>{% endif %}
           {{ message.content|linebreaksbr }}
           <div style="font-size: 0.7rem; margin-top: 0.3rem; opacity: 0.8; text-align: right;">
             {{ message.timestamp|date:"H:i" }}

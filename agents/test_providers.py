@@ -105,10 +105,6 @@ class TestLLMProviders(unittest.TestCase):
             provider = factory.get_provider("InquiryAgent")
             self.assertIsInstance(provider, OpenAIProvider)
 
-        with patch.dict('os.environ', {'AGENT_CRITIQUEAGENT_MODEL': 'anthropic'}):
-            provider = factory.get_provider("CritiqueAgent")
-            self.assertIsInstance(provider, AnthropicProvider)
-
         with patch.dict('os.environ', {'AGENT_INQUIRYAGENT_MODEL': 'ollama'}):
             provider = factory.get_provider("InquiryAgent")
             self.assertIsInstance(provider, OllamaProvider)

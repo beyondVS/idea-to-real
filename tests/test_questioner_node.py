@@ -1,9 +1,16 @@
 import unittest
-from unittest.mock import patch
+from unittest.mock import patch, MagicMock
 from agents.inquiry import InquiryAgent, InquiryGraphState
 
 class TestQuestionerNode(unittest.TestCase):
-    def setUp(self):
+    @patch('agents.base.ProviderFactory.get_provider')
+    def setUp(self, mock_get_provider):
+        # Django 설정을 참조하지 않도록 프로바이더를 미리 주입하거나 팩토리를 목 처리합니다.
+        mock_provider = MagicMock()
+        mock_provider.model = "test-model"
+        mock_get_provider.return_value = mock_provider
+        
+        from agents.inquiry import InquiryAgent
         self.agent = InquiryAgent()
 
     @patch('agents.base.BaseAgent.get_response')

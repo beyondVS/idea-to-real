@@ -3,9 +3,9 @@
 이 계획은 불필요한 에이전트를 제거하고 질문 전략을 간소화하여 시스템을 최적화하는 과정을 단계별로 정의합니다.
 
 ## Phase 1: CritiqueAgent 제거 및 InquiryAgent 전략 수정
-- [ ] Task: `agents/critique.py` 파일 및 관련 단위 테스트(`agents/test_critique.py` 등) 삭제
-- [ ] Task: `agents/inquiry.py`의 `InquiryAgent.SYSTEM_PROMPT`에서 소크라테스식 질문법 관련 내용 삭제 및 '간결한 5 Whys'로 전략 수정
-- [ ] Task: 수정된 `InquiryAgent`에 대한 단위 테스트 작성 및 기존 테스트 업데이트
+- [x] Task: `agents/critique.py` 파일 및 관련 단위 테스트(`agents/test_critique.py` 등) 삭제
+- [x] Task: `agents/inquiry.py`의 `InquiryAgent.SYSTEM_PROMPT`에서 소크라테스식 질문법 관련 내용 삭제 및 '간결한 5 Whys'로 전략 수정
+- [x] Task: 수정된 `InquiryAgent`에 대한 단위 테스트 작성 및 기존 테스트 업데이트
 - [ ] Task: Conductor - User Manual Verification 'Phase 1' (Protocol in workflow.md)
 
 ## Phase 2: LangGraph 워크플로우 리팩토링
