@@ -48,7 +48,7 @@ def create_session(request):
     return redirect('chat:index')
 
 def send_message(request, session_id):
-    """사용자 메시지를 처리하고 AI 에이전트(Inquiry, Critique)의 응답을 생성합니다.
+    """사용자 메시지를 처리하고 AI 에이전트(Inquiry)의 응답을 생성합니다.
 
     Args:
         request: Django HttpRequest 객체입니다.
