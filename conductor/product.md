@@ -17,6 +17,7 @@ To provide a structured, logical approach to problem definition using AI, moving
 
 ## Core Features
 - **LangGraph-based Inquiry Engine:** A state-machine powered AI agent specialized in asking probing questions using the 5 Whys technique. It utilizes 'Analyzer' and 'Questioner' nodes to ensure logical depth and systematic root cause analysis in every turn.
+- **Interactive Chat Interface:** Provides real-time feedback with loading indicators and asynchronously displays the final problem specification in a highlighted card format without page reloads.
 - **Structured Document Exporter:** Automatically transforming the interaction history into a structured 'Problem Specification'.
 
 ## Problem Scope

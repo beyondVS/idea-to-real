@@ -8,6 +8,7 @@
 
 ## Frontend Framework
 - **Django Template:** Utilizing Django's built-in templating engine for a seamless, server-rendered frontend experience that tightly integrates with the backend logic.
+- **Vanilla JavaScript (Fetch API):** Employed for asynchronous client-server interactions, eliminating page reloads and providing immediate UI feedback during AI processing.
 
 ## Database
 - **PostgreSQL:** A powerful, open-source object-relational database system, ideal for ensuring data integrity and handling complex queries efficiently.
