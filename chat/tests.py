@@ -103,3 +103,24 @@ class ViewTest(TestCase):
             messages = list(get_messages(response.wsgi_request))
             self.assertTrue(len(messages) > 0)
             self.assertIn("이용량이 많아", str(messages[0]))
+
+    def test_async_message_sending(self):
+        """AJAX를 통한 메시지 전송 시 JSON 응답이 반환되는지 확인합니다."""
+        from unittest.mock import patch
+        with patch('agents.inquiry.InquiryAgent.generate_question') as mock_inquiry:
+            mock_inquiry.return_value = ("Async AI inquiry", 1, {})
+            
+            # AJAX 요청 시뮬레이션
+            response = self.client.post(
+                reverse('chat:send_message', args=[self.session.id]), 
+                {'content': 'Async user message'},
+                HTTP_X_REQUESTED_WITH='XMLHttpRequest'
+            )
+            
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(response['Content-Type'], 'application/json')
+            
+            data = response.json()
+            self.assertEqual(data['status'], 'success')
+            self.assertEqual(data['user_message']['content'], 'Async user message')
+            self.assertEqual(data['ai_message']['content'], 'Async AI inquiry')

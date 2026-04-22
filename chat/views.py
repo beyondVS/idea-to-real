@@ -97,6 +97,19 @@ def send_message(request, session_id):
             except Exception as e:
                 # 기타 알 수 없는 에러 처리
                 django_messages.error(request, f"알 수 없는 에러가 발생했습니다: {str(e)}")
+                if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                    return JsonResponse({'status': 'error', 'message': f"알 수 없는 에러가 발생했습니다: {str(e)}"}, status=500)
+
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            if 'ai_inquiry_content' in locals():
+                return JsonResponse({
+                    'status': 'success',
+                    'user_message': {'content': content, 'sender': 'user'},
+                    'ai_message': {'content': ai_inquiry_content, 'sender': 'ai_inquiry'}
+                })
+            else:
+                # 에러로 인해 AI 응답이 생성되지 않은 경우
+                return JsonResponse({'status': 'error', 'message': 'AI 응답 생성 실패'}, status=500)
 
     return redirect('chat:detail', session_id=session.id)
 
