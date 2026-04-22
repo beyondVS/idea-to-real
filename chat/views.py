@@ -60,6 +60,8 @@ def send_message(request, session_id):
     session = get_object_or_404(Session, id=session_id)
     if request.method == 'POST':
         content = request.POST.get('content')
+        ai_inquiry_content = None
+
         if content:
             # 1. 사용자 메시지 저장
             Message.objects.create(
@@ -101,7 +103,7 @@ def send_message(request, session_id):
                     return JsonResponse({'status': 'error', 'message': f"알 수 없는 에러가 발생했습니다: {str(e)}"}, status=500)
 
         if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-            if 'ai_inquiry_content' in locals():
+            if ai_inquiry_content is not None:
                 return JsonResponse({
                     'status': 'success',
                     'user_message': {'content': content, 'sender': 'user'},
